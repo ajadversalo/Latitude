@@ -1,4 +1,6 @@
-:root { --background: #ffffff; --foreground: #1d2230; --font-geist-sans: "Segoe UI", Arial, Helvetica, sans-serif; --font-geist-mono: Consolas, "Courier New", monospace; --font-display: "Arial Black", "Arial Narrow", Impact, sans-serif; }
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap");
+
+:root { --background: #ffffff; --foreground: #1d2230; --font-geist-sans: "Inter", "Segoe UI", Arial, Helvetica, sans-serif; --font-geist-mono: "JetBrains Mono", Consolas, "Courier New", monospace; --font-display: "Barlow Condensed", "Arial Narrow", Impact, sans-serif; }
 * { box-sizing: border-box; padding: 0; margin: 0; }
 html { background: var(--background); color-scheme: light; }
 body { min-height: 100vh; color: var(--foreground); background: var(--background); font-family: var(--font-geist-sans); -webkit-font-smoothing: antialiased; }
