@@ -74,7 +74,14 @@ const dotnetLessons: Lesson[] = [
   { number: "06", title: "Production practices", duration: "142 min", topics: ["Dependency direction", "DI service lifetimes", "Transient services", "Scoped services", "Singleton services", "Captive dependencies & scopes", "Async & cancellation", "Problem Details", "Logging & observability", "Authentication & authorization", "Health checks", "Publishing & deployment"] },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons];
+const apiLessons: Lesson[] = [
+  { number: "01", title: "API foundations", duration: "52 min", topics: ["REST constraints", "Resources & representations", "GraphQL execution model", "Choosing an API style"] },
+  { number: "02", title: "REST API design", duration: "72 min", topics: ["HTTP methods & safety", "Status codes & errors", "Filtering, sorting & pagination", "Caching & conditional requests"] },
+  { number: "03", title: "GraphQL design", duration: "78 min", topics: ["Schemas & type systems", "Queries, mutations & subscriptions", "Resolvers & data loading", "Nullability & error handling"] },
+  { number: "04", title: "Production APIs", duration: "84 min", topics: ["Versioning & evolution", "Authentication & field authorization", "Rate limits & query complexity", "Observability & testing"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -101,6 +108,13 @@ const dotnetLessonMeaning: Record<string, string> = {
   "04": "Database access, external integrations, configuration, and other replaceable implementation details",
   "05": "Fast feedback, realistic API tests, consistent builds, and shared engineering policy",
   "06": "Dependency safety, runtime correctness, security, diagnostics, health, and deployment",
+};
+
+const apiLessonMeaning: Record<string, string> = {
+  "01": "The core models behind resource-oriented REST and schema-oriented GraphQL APIs",
+  "02": "Predictable HTTP semantics, responses, collection navigation, and cache behavior",
+  "03": "Strong schemas, operation types, efficient resolution, and explicit failure behavior",
+  "04": "Safe evolution, layered access control, abuse resistance, diagnostics, and confidence",
 };
 
 const expandedName: Record<string, string> = {
@@ -193,9 +207,29 @@ Object.assign(topicCopy, {
   "Authentication & authorization": authContent("Authentication handlers validate credentials and build a ClaimsPrincipal. Authorization policies evaluate requirements for an endpoint or resource; authentication alone never grants blanket access.", "Configure schemes explicitly, validate issuer and audience for bearer tokens, prefer named policies over scattered role strings, and perform resource-based checks where ownership matters.", "Protect endpoints by default and make exceptional anonymous access explicit."),
   "Health checks": authContent("Health checks expose whether the process is alive and whether it is ready to receive traffic. Readiness may depend on critical infrastructure; liveness should not fail merely because a downstream service is temporarily unavailable.", "Expose separate liveness and readiness endpoints, tag checks, keep them fast, secure detailed diagnostics, and align orchestrator probes with startup behavior.", "A bad health check can amplify an outage by restarting healthy processes."),
   "Publishing & deployment": authContent("dotnet publish produces deployment-ready output for a target framework, runtime, and configuration. Deployment also includes configuration injection, database rollout, health verification, rollback, and observability.", "Build once in CI, test the artifact, run migrations as a controlled step, start with Production configuration, bind to the platform port, and use rolling or blue-green releases for safe rollback.", "Deployment is a repeatable system change, not copying the bin folder."),
+  "REST constraints": authContent("REST is an architectural style built around client-server separation, stateless requests, cacheable responses, a uniform interface, layered systems, and optional code on demand. An HTTP API is not automatically RESTful merely because it uses JSON.", "Model stable resources with URLs, transfer representations through standard HTTP methods, and make each request carry the context needed to process it.", "Use REST constraints to gain interoperability and evolvability, not as a naming convention."),
+  "Resources & representations": authContent("A resource is a conceptual thing identified by a URI; a representation is one serialized view of its current state. The same resource may have JSON, HTML, or another representation.", "Expose /orders/42 as the order identity and negotiate its representation with headers. Link related resources instead of leaking database table structure into every route.", "Design URLs around domain resources and keep their wire representations free to evolve."),
+  "GraphQL execution model": authContent("GraphQL clients submit typed operations against a schema and select the exact response shape they need. The server validates the document, executes fields through resolvers, and returns data with structured errors.", "A product-page query can request a product, its price, and the first five reviews in one operation while omitting fields the screen does not use.", "GraphQL moves response-shape composition into a typed query language governed by the server schema."),
+  "Choosing an API style": authContent("REST and GraphQL optimize different constraints. REST fits resource-oriented workflows, HTTP caching, and simple public integration; GraphQL excels when clients need flexible, connected views over many data sources.", "Compare client diversity, graph complexity, caching needs, operational maturity, and team expertise. A system may use REST for commands and public resources while a GraphQL gateway serves product UIs.", "Choose from concrete consumer and operational needs; neither style is a universal upgrade over the other."),
+  "HTTP methods & safety": authContent("GET and HEAD are safe; PUT and DELETE are idempotent; POST usually is neither. Method semantics let clients, caches, gateways, and retry policies behave correctly.", "Use GET to retrieve, POST to create or invoke a non-idempotent action, PUT to replace at a known URI, and PATCH for a defined partial-update format.", "Honor HTTP semantics so retries and intermediaries do not create surprising side effects."),
+  "Status codes & errors": authContent("Status codes communicate the broad outcome while a stable error body carries machine-readable detail. Successful, client-error, and server-error families must remain semantically distinct.", "Return 201 with a Location header after creation, 404 for a missing resource, 409 for a state conflict, and Problem Details for consistent error metadata.", "Make failures predictable without encoding every domain outcome into a custom status code."),
+  "Filtering, sorting & pagination": authContent("Collection endpoints need bounded navigation and explicit query semantics. Cursor pagination remains stable under concurrent inserts more readily than deep offset pagination.", "Accept allowlisted filters and sort fields, cap page sizes, return an opaque next cursor, and document whether results have a stable ordering.", "Bound every collection and treat query parameters as a reviewed API contract."),
+  "Caching & conditional requests": authContent("HTTP caching reuses fresh representations, while validators such as ETag and Last-Modified support conditional requests and prevent lost updates.", "Return Cache-Control and an ETag on GET; answer If-None-Match with 304 when unchanged; require If-Match for edits that must not overwrite a newer version.", "State cache policy explicitly and use validators for both efficiency and concurrency safety."),
+  "Schemas & type systems": authContent("A GraphQL schema is the executable contract of object, scalar, enum, interface, union, and input types. It defines which fields exist, their arguments, and their nullability.", "Model domain concepts rather than storage tables, use purpose-built input types, document fields, and validate the schema in CI with representative operations.", "Treat the schema as a product interface whose types communicate guarantees."),
+  "Queries, mutations & subscriptions": authContent("Queries read data, mutations initiate state changes, and subscriptions deliver event-driven updates. Mutation fields execute serially at the top level; query fields may resolve concurrently.", "Use a query for product search, a narrowly named mutation such as placeOrder for a business command, and subscriptions only where live delivery justifies persistent connections.", "Select an operation type by semantics, not merely by the transport being used."),
+  "Resolvers & data loading": authContent("Resolvers produce field values and compose backend systems. Naive nested resolution can cause N+1 calls; request-scoped batching and caching consolidate repeated loads.", "Collect author IDs requested across a list of posts, fetch those authors in one batch, and map results back without sharing the loader cache across users or requests.", "Measure resolver behavior and batch at data-source boundaries without hiding authorization checks."),
+  "Nullability & error handling": authContent("GraphQL fields are nullable by default. If a non-null field fails, null propagates to the nearest nullable parent while the response may contain both partial data and errors.", "Mark a field non-null only when the server can uphold that promise. Return typed domain outcomes for expected business failures and reserve errors for exceptional field execution failures.", "Nullability is a runtime guarantee with failure-propagation consequences, not decorative syntax."),
+  "Versioning & evolution": authContent("APIs evolve safest through additive changes, tolerant readers, explicit deprecation, and usage evidence. REST may version incompatible contracts; GraphQL commonly evolves one schema by deprecating fields.", "Add an optional field before requiring it, publish deprecation reasons and replacement paths, observe remaining consumers, and remove only under an agreed lifecycle policy.", "Prefer compatible evolution; use versions as a deliberate escape hatch for true breaks."),
+  "Authentication & field authorization": authContent("Authentication establishes the caller; authorization must still be enforced for every operation and resource. In GraphQL, endpoint-level protection alone cannot secure sensitive fields.", "Authorize an order against its tenant and owner in the service layer, and apply field-level policy before resolving sensitive values such as cost or personal data.", "Keep authorization close to protected data and apply it consistently across REST routes and GraphQL fields."),
+  "Rate limits & query complexity": authContent("Request counts alone do not represent cost: one GraphQL document or REST expansion can trigger substantial work. Limits should account for identity, operation cost, depth, fan-out, and backend budgets.", "Cap list sizes, reject cyclic or excessive depth, assign schema-field costs, use persisted operations where appropriate, and return clear throttling metadata.", "Bound work before execution and align limits with actual resource consumption."),
+  "Observability & testing": authContent("Production API confidence combines contract tests, integration tests, telemetry, and consumer-visible service objectives. Logs alone rarely explain latency across resolvers and dependencies.", "Trace operation names, routes, status, duration, resolver or dependency spans, and safe error categories. Test schema compatibility, HTTP semantics, authorization, and representative cost limits.", "Observe and test the contract at the boundary where consumers experience it."),
 });
 
 const codeExamples: Record<string, { title: string; badLabel: string; bad: string; goodLabel: string; good: string }> = {
+  "Choosing an API style": { title: "Match the interface to the consumer", badLabel: "Choose by trend", bad: `// \"GraphQL is newer, so every endpoint\n// should move behind one graph.\"`, goodLabel: "Choose by constraints", good: `REST    → cacheable resources, simple integrations\nGraphQL → connected, client-shaped UI data\n\nEvaluate both against real operations and SLOs.` },
+  "HTTP methods & safety": { title: "Let method semantics describe the operation", badLabel: "A state change hidden in GET", bad: `GET /orders/42/cancel`, goodLabel: "An explicit command", good: `POST /orders/42/cancellations\nIdempotency-Key: 7f6...\n\n{ \"reason\": \"customer_request\" }` },
+  "Schemas & type systems": { title: "Make the contract express its guarantees", badLabel: "Ambiguous strings everywhere", bad: `type Order {\n  id: String\n  status: String\n  total: String\n}`, goodLabel: "Purposeful types", good: `type Order {\n  id: ID!\n  status: OrderStatus!\n  total: Money!\n}` },
+  "Resolvers & data loading": { title: "Batch repeated field loads per request", badLabel: "One query per parent", bad: `posts.map(post => db.author.find(post.authorId))`, goodLabel: "One batched lookup", good: `const author = await authorsById.load(post.authorId)\n\n// The request-scoped loader batches all IDs\n// into one data-source call.` },
   "Objects & classes": { title: "Put behavior beside the state it governs", badLabel: "Data with logic elsewhere", bad: `const product = { price: 100 }
 
 function discountedPrice(p, rate) {
@@ -1103,9 +1137,10 @@ export default function Home() {
   const selectTopic = (topic: string) => {
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : "03";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : dotnetLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : 200;
+    const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : "04";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : apiLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : 300;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -1127,9 +1162,10 @@ export default function Home() {
     if (!savedTopic) return;
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : "03";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : dotnetLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : 200;
+    const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : "04";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : apiLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : 300;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -1146,9 +1182,10 @@ export default function Home() {
   const oopTopics = lessons.flatMap((lesson) => lesson.topics);
   const authTopics = authLessons.flatMap((lesson) => lesson.topics);
   const dotnetTopics = dotnetLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : "03";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : dotnetTopics;
+  const apiTopics = apiLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : "04";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : apiTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -1265,6 +1302,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("04")} aria-expanded={openCourses.includes("04")}>
+            <span><small>Course 04</small><strong>GraphQL & REST APIs</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("04") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("04") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>GraphQL and REST,<br />designed with intent.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "04" ? Math.round(((courseTopicIndex + 1) / apiTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "04" ? courseTopicIndex + 1 : 0} / {apiTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "04" ? ((courseTopicIndex + 1) / apiTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && apiTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(apiLessons, 300, "Course 04 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -1298,7 +1359,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : dotnetLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : apiLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
