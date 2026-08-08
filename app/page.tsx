@@ -81,7 +81,14 @@ const apiLessons: Lesson[] = [
   { number: "04", title: "Production APIs", duration: "84 min", topics: ["Versioning & evolution", "Authentication & field authorization", "Rate limits & query complexity", "Observability & testing"] },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons];
+const figmaLessons: Lesson[] = [
+  { number: "01", title: "Figma foundations", duration: "48 min", topics: ["Files, pages & layers", "Frames & sections", "Vector networks", "Constraints & resizing"] },
+  { number: "02", title: "Layout & visual systems", duration: "66 min", topics: ["Auto layout", "Typography systems", "Color styles & variables", "Grids, spacing & hierarchy"] },
+  { number: "03", title: "Components & prototypes", duration: "74 min", topics: ["Components & instances", "Variants & properties", "Interactive prototypes", "Responsive component patterns"] },
+  { number: "04", title: "Collaboration & delivery", duration: "62 min", topics: ["Libraries & governance", "Design critique & comments", "Developer handoff", "Accessible design workflows"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -115,6 +122,13 @@ const apiLessonMeaning: Record<string, string> = {
   "02": "Predictable HTTP semantics, responses, collection navigation, and cache behavior",
   "03": "Strong schemas, operation types, efficient resolution, and explicit failure behavior",
   "04": "Safe evolution, layered access control, abuse resistance, diagnostics, and confidence",
+};
+
+const figmaLessonMeaning: Record<string, string> = {
+  "01": "The document structure, drawing model, frames, and resizing rules behind dependable design files",
+  "02": "Repeatable layout, type, color, spacing, and hierarchy decisions that create visual coherence",
+  "03": "Reusable UI building blocks and realistic interaction models across screen sizes and states",
+  "04": "Shared libraries, constructive feedback, implementation-ready specifications, and inclusive design",
 };
 
 const expandedName: Record<string, string> = {
@@ -223,6 +237,22 @@ Object.assign(topicCopy, {
   "Authentication & field authorization": authContent("Authentication establishes the caller; authorization must still be enforced for every operation and resource. In GraphQL, endpoint-level protection alone cannot secure sensitive fields.", "Authorize an order against its tenant and owner in the service layer, and apply field-level policy before resolving sensitive values such as cost or personal data.", "Keep authorization close to protected data and apply it consistently across REST routes and GraphQL fields."),
   "Rate limits & query complexity": authContent("Request counts alone do not represent cost: one GraphQL document or REST expansion can trigger substantial work. Limits should account for identity, operation cost, depth, fan-out, and backend budgets.", "Cap list sizes, reject cyclic or excessive depth, assign schema-field costs, use persisted operations where appropriate, and return clear throttling metadata.", "Bound work before execution and align limits with actual resource consumption."),
   "Observability & testing": authContent("Production API confidence combines contract tests, integration tests, telemetry, and consumer-visible service objectives. Logs alone rarely explain latency across resolvers and dependencies.", "Trace operation names, routes, status, duration, resolver or dependency spans, and safe error categories. Test schema compatibility, HTTP semantics, authorization, and representative cost limits.", "Observe and test the contract at the boundary where consumers experience it."),
+  "Files, pages & layers": authContent("A Figma file contains pages, and each page contains an ordered layer tree. Clear structure makes navigation, collaboration, and later changes dramatically easier.", "Separate exploration, approved flows, and archived work into intentional pages. Name important frames and layers by purpose, then remove obsolete duplicates before handoff.", "Treat the layer tree as shared project structure, not private drawing history."),
+  "Frames & sections": authContent("Frames are layout containers with dimensions, constraints, clipping, grids, and prototype behavior. Sections organize related work at a higher level without replacing the frame hierarchy.", "Use frames for screens and components, nested frames for layout groups, and sections to label flows such as onboarding or checkout.", "Choose frames when elements need layout behavior; use sections to make the canvas understandable."),
+  "Vector networks": authContent("Figma vectors use connected points and segments that can branch rather than requiring only traditional closed paths. Fill, stroke, joins, and winding determine the final shape.", "Build a simple icon on a consistent grid, minimize unnecessary points, align strokes optically, and test it at its intended display size.", "Optimize vectors for a clear silhouette and maintainable geometry, not the fewest possible clicks."),
+  "Constraints & resizing": authContent("Constraints describe how a layer responds when its parent frame changes size. Fixed, anchored, centered, stretched, and scaled behavior should reflect the intended interface relationship.", "Anchor a close icon to the top-right, stretch a divider left and right, and test the parent at narrow and wide sizes before considering the layout complete.", "Define resizing behavior deliberately and verify it by changing the containing frame."),
+  "Auto layout": authContent("Auto layout arranges children along an axis using padding, gaps, alignment, wrapping, and sizing rules. It turns static placement into a layout model that can adapt to content.", "Build a button from label content with horizontal and vertical padding, then place buttons in a wrapping action row whose width follows its container.", "Use auto layout where content or container size may change; encode relationships instead of coordinates."),
+  "Typography systems": authContent("A typography system defines a small set of roles with intentional family, weight, size, line height, and letter spacing. Roles communicate function more effectively than arbitrary style names.", "Create roles such as display, heading, body, label, and caption. Test real long-form copy, localization, and narrow screens before publishing them.", "Design type as a readable hierarchy of roles, not a collection of isolated font sizes."),
+  "Color styles & variables": authContent("Reusable color definitions separate semantic intent from a raw value. Semantic names such as surface, text-muted, or action-primary support themes and systematic change better than names such as blue-500 alone.", "Map semantic variables to palette values for light and dark modes, then use semantic variables in components rather than binding components directly to raw colors.", "Name color by purpose at the point of use and keep palette decisions behind that semantic layer."),
+  "Grids, spacing & hierarchy": authContent("Grids align major regions, spacing creates rhythm, and visual hierarchy directs attention through scale, contrast, position, and whitespace. A small spacing scale reduces accidental inconsistency.", "Choose a base spacing rhythm, define column behavior for key breakpoints, and audit whether the primary action and reading order remain obvious without decorative noise.", "Use alignment and spacing to explain relationships before adding more visual treatment."),
+  "Components & instances": authContent("A component defines reusable structure and behavior; an instance inherits it while allowing controlled overrides. Good components represent a meaningful product pattern rather than every possible group of layers.", "Create a reusable alert component, place instances across flows, and expose only the text, icon, and actions that consumers reasonably need to change.", "Componentize repeated product decisions and keep instances connected to their source."),
+  "Variants & properties": authContent("Variants group related component states, while component properties expose intentional controls such as text, booleans, instance swaps, and variant selections.", "Model a button with size and emphasis variants plus optional icon properties. Avoid multiplying variants for content that can be expressed as a property or nested component.", "Expose a compact, understandable API for designers instead of a combinatorial variant matrix."),
+  "Interactive prototypes": authContent("Prototypes connect frames and component states with triggers, actions, transitions, overlays, and scrolling behavior. Their purpose is to answer interaction questions, not imitate every production detail.", "Prototype the critical checkout path, include empty and error recovery states, and choose simple transitions unless motion itself is under evaluation.", "Build the smallest prototype that can validate the behavior or communicate the intended flow."),
+  "Responsive component patterns": authContent("Responsive components combine auto layout, constraints, min or max dimensions, wrapping, and content priorities. They should remain useful across realistic widths and content lengths.", "Test a card with short and long titles, optional metadata, translated labels, and narrow containers. Decide explicitly which regions wrap, grow, reorder, or disappear.", "Test component behavior across content and width extremes, not only the polished default state."),
+  "Libraries & governance": authContent("A shared library distributes approved components, styles, and variables across files. Governance defines ownership, contribution, review, publishing, migration, and deprecation practices.", "Publish reviewed changes with clear descriptions, communicate breaking impacts, provide migration guidance, and assign maintainers for foundational components.", "A library succeeds through stewardship and adoption, not merely through a large component count."),
+  "Design critique & comments": authContent("Critique evaluates whether work meets user and product goals; comments record contextual discussion and decisions. Useful feedback is specific, grounded in evidence, and proportionate to the design stage.", "State the problem and review goal before critique, separate blocking issues from suggestions, resolve comments with a decision, and summarize changes that affect the team.", "Review the design against its goals and turn discussion into clear decisions."),
+  "Developer handoff": authContent("Handoff is an ongoing collaboration that connects design intent to implementation constraints. Organized components, explicit states, responsive behavior, assets, and acceptance criteria reduce ambiguity.", "Review the flow with engineering, document unusual behavior and edge states, link to the canonical component, and verify the implementation rather than treating inspection values as a complete specification.", "Communicate behavior and intent alongside measurements; implementation is part of the design feedback loop."),
+  "Accessible design workflows": authContent("Accessibility must be considered while defining structure, content, interaction, color, focus, and state—not checked only after a screen looks finished.", "Annotate heading order, accessible names, focus sequence, keyboard behavior, error messaging, and contrast-sensitive choices. Include zoom, long content, and non-pointer interaction in reviews.", "Make inclusive behavior visible in the design and validate it with people and implementation-level testing."),
 });
 
 const codeExamples: Record<string, { title: string; badLabel: string; bad: string; goodLabel: string; good: string }> = {
@@ -1138,9 +1168,10 @@ export default function Home() {
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : "04";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : apiLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : 300;
+    const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : "05";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : figmaLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : 400;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -1163,9 +1194,10 @@ export default function Home() {
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : "04";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : apiLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : 300;
+    const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : "05";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : figmaLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : 400;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -1183,9 +1215,10 @@ export default function Home() {
   const authTopics = authLessons.flatMap((lesson) => lesson.topics);
   const dotnetTopics = dotnetLessons.flatMap((lesson) => lesson.topics);
   const apiTopics = apiLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : "04";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : apiTopics;
+  const figmaTopics = figmaLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : "05";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : figmaTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -1326,6 +1359,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("05")} aria-expanded={openCourses.includes("05")}>
+            <span><small>Course 05</small><strong>Figma</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("05") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("05") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>Figma,<br />from canvas to handoff.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "05" ? Math.round(((courseTopicIndex + 1) / figmaTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "05" ? courseTopicIndex + 1 : 0} / {figmaTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "05" ? ((courseTopicIndex + 1) / figmaTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && figmaTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(figmaLessons, 400, "Course 05 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -1359,7 +1416,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : apiLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : figmaLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
