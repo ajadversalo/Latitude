@@ -88,7 +88,19 @@ const figmaLessons: Lesson[] = [
   { number: "04", title: "Collaboration & delivery", duration: "62 min", topics: ["Libraries & governance", "Design critique & comments", "Developer handoff", "Accessible design workflows"] },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons];
+const systemDesignLessons: Lesson[] = [
+  { number: "01", title: "Framing the system", duration: "64 min", topics: ["Functional requirements", "Quality attributes", "Capacity estimation", "Architecture diagrams"] },
+  { number: "02", title: "Services & traffic", duration: "78 min", topics: ["Monoliths & microservices", "API gateways", "Load balancing", "Service discovery"] },
+  { number: "03", title: "Data & storage", duration: "94 min", topics: ["SQL vs NoSQL", "Data modeling", "Indexes & query patterns", "Replication", "Partitioning & sharding", "Object storage & search"] },
+  { number: "04", title: "Scale & performance", duration: "86 min", topics: ["Horizontal & vertical scaling", "Caching strategies", "CDNs & edge delivery", "Backpressure & load shedding"] },
+  { number: "05", title: "Distributed systems", duration: "108 min", topics: ["CAP & PACELC", "Consistency models", "Distributed transactions", "Consensus & leader election", "Distributed IDs & clocks"] },
+  { number: "06", title: "Messaging & workflows", duration: "82 min", topics: ["Queues & pub-sub", "Event streaming", "Delivery semantics", "Sagas & orchestration"] },
+  { number: "07", title: "Reliability patterns", duration: "92 min", topics: ["Timeouts & retries", "Idempotency", "Circuit breakers & bulkheads", "Rate limiting", "Disaster recovery"] },
+  { number: "08", title: "Production architecture", duration: "88 min", topics: ["Security boundaries", "Observability & SLOs", "Deployment strategies", "Multi-region design", "Cost & sustainability"] },
+  { number: "09", title: "Design exercises", duration: "126 min", topics: ["URL shortener", "News feed", "Chat system", "File storage service", "Search autocomplete"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -129,6 +141,18 @@ const figmaLessonMeaning: Record<string, string> = {
   "02": "Repeatable layout, type, color, spacing, and hierarchy decisions that create visual coherence",
   "03": "Reusable UI building blocks and realistic interaction models across screen sizes and states",
   "04": "Shared libraries, constructive feedback, implementation-ready specifications, and inclusive design",
+};
+
+const systemDesignLessonMeaning: Record<string, string> = {
+  "01": "Turning an ambiguous problem into explicit workloads, constraints, estimates, and system boundaries",
+  "02": "Shaping service boundaries and routing traffic safely to healthy, discoverable compute",
+  "03": "Choosing data models and storage paths from access patterns, scale, and correctness needs",
+  "04": "Growing throughput and controlling latency while protecting the system under pressure",
+  "05": "Reasoning about consistency, coordination, time, and failure across independent machines",
+  "06": "Decoupling work with asynchronous delivery, durable logs, and long-running workflow patterns",
+  "07": "Containing failure, making repetition safe, controlling demand, and planning recovery",
+  "08": "Operating secure, observable, deployable, multi-region systems within a sustainable budget",
+  "09": "Applying the design process to familiar systems with distinct workloads and tradeoffs",
 };
 
 const expandedName: Record<string, string> = {
@@ -253,6 +277,48 @@ Object.assign(topicCopy, {
   "Design critique & comments": authContent("Critique evaluates whether work meets user and product goals; comments record contextual discussion and decisions. Useful feedback is specific, grounded in evidence, and proportionate to the design stage.", "State the problem and review goal before critique, separate blocking issues from suggestions, resolve comments with a decision, and summarize changes that affect the team.", "Review the design against its goals and turn discussion into clear decisions."),
   "Developer handoff": authContent("Handoff is an ongoing collaboration that connects design intent to implementation constraints. Organized components, explicit states, responsive behavior, assets, and acceptance criteria reduce ambiguity.", "Review the flow with engineering, document unusual behavior and edge states, link to the canonical component, and verify the implementation rather than treating inspection values as a complete specification.", "Communicate behavior and intent alongside measurements; implementation is part of the design feedback loop."),
   "Accessible design workflows": authContent("Accessibility must be considered while defining structure, content, interaction, color, focus, and state—not checked only after a screen looks finished.", "Annotate heading order, accessible names, focus sequence, keyboard behavior, error messaging, and contrast-sensitive choices. Include zoom, long content, and non-pointer interaction in reviews.", "Make inclusive behavior visible in the design and validate it with people and implementation-level testing."),
+  "Functional requirements": authContent("Functional requirements describe the user-visible capabilities and core flows the system must support. They establish scope before technology choices begin.", "Identify actors, top use cases, inputs, outputs, and explicit exclusions; rank the critical read and write paths.", "Design the smallest system that satisfies the important flows before expanding the scope."),
+  "Quality attributes": authContent("Quality attributes turn words such as fast, reliable, and secure into measurable targets for latency, availability, durability, consistency, privacy, and cost.", "Define workload-specific targets such as p99 latency, recovery time, data-loss tolerance, and regional availability.", "Architecture decisions are tradeoffs among explicit quality targets, not abstract best practices."),
+  "Capacity estimation": authContent("Back-of-the-envelope estimates translate users and behavior into requests, bandwidth, compute, memory, and storage over time.", "Estimate average and peak QPS, payload sizes, read-write ratio, retention, replication overhead, and expected growth; keep assumptions visible.", "Approximate early to identify orders of magnitude and likely bottlenecks."),
+  "Architecture diagrams": authContent("A useful diagram communicates boundaries, responsibilities, data movement, trust zones, and failure dependencies at a chosen level of detail.", "Start with clients, entry points, services, stores, and external systems; annotate critical paths and create deeper diagrams only where needed.", "Every box and arrow should answer a design question for its audience."),
+  "Monoliths & microservices": authContent("A modular monolith deploys one process with internal boundaries; microservices add independent deployment and scaling at the cost of networks, coordination, and operations.", "Begin with cohesive modules and split a service when ownership, scaling, reliability, or release independence provides evidence for the boundary.", "Choose service boundaries from organizational and runtime needs, not fashion."),
+  "API gateways": authContent("An API gateway is an entry point for routing, authentication integration, quotas, protocol adaptation, and cross-cutting policy.", "Keep gateway policy focused and observable; avoid moving domain workflows into a central layer that becomes a bottleneck.", "Centralize edge concerns while keeping business ownership within services."),
+  "Load balancing": authContent("Load balancers distribute traffic across healthy instances using algorithms informed by connections, latency, capacity, or locality.", "Combine health checks, connection draining, bounded timeouts, and zone-aware routing; understand when session affinity creates uneven load.", "Balance only across instances that can safely accept work."),
+  "Service discovery": authContent("Service discovery maps a logical service identity to healthy network endpoints as instances appear, move, and disappear.", "Use platform DNS or a registry with health signals, cache records briefly, and handle stale results through retries against different endpoints.", "Treat discovery as dynamic control-plane data, not permanent configuration."),
+  "SQL vs NoSQL": authContent("Relational and non-relational stores offer different query, transaction, schema, and scaling models. The workload matters more than the category label.", "Choose from access patterns, relationship complexity, transaction boundaries, scale, operational skills, and failure requirements.", "Select storage per bounded workload; polyglot persistence should earn its operational cost."),
+  "Data modeling": authContent("Data models encode entities, relationships, invariants, ownership, and the shapes used by important reads and writes.", "Model around aggregate and transaction boundaries, then denormalize intentionally when measured query needs justify duplication.", "Start from access patterns and correctness constraints rather than mirroring UI screens."),
+  "Indexes & query patterns": authContent("Indexes accelerate selected reads by maintaining additional ordered structures, consuming storage and making writes more expensive.", "Design composite indexes around filters, joins, and sort order; inspect query plans and remove redundant or unused indexes.", "Every index should support a known query and justify its write and storage cost."),
+  Replication: authContent("Replication copies data across nodes for availability, read scale, or locality, introducing lag and failover complexity.", "Choose leader-based, multi-leader, or leaderless behavior from write patterns and consistency needs; test promotion and stale-read behavior.", "Replication improves redundancy but does not replace backups or eliminate consistency tradeoffs."),
+  "Partitioning & sharding": authContent("Partitioning divides data and load across nodes. A shard key determines distribution, locality, routing, and the difficulty of rebalancing.", "Prefer high-cardinality keys with even traffic, plan for hotspots and cross-shard operations, and automate movement as capacity changes.", "A good partition key spreads load while keeping common operations local."),
+  "Object storage & search": authContent("Object stores suit large immutable blobs, while search indexes provide text retrieval and ranking. Both are specialized projections rather than universal sources of truth.", "Store blob metadata and authorization in an authoritative database, use signed access, and update search asynchronously with repairable indexing jobs.", "Separate authoritative state from derived blob and search representations."),
+  "Horizontal & vertical scaling": authContent("Vertical scaling gives a node more resources; horizontal scaling adds nodes. Each has different limits, complexity, and cost curves.", "Scale up for simplicity while headroom exists, then scale stateless workloads out and address state, coordination, and partitioning explicitly.", "Use the simplest scaling dimension that meets measured demand and recovery needs."),
+  "Caching strategies": authContent("Caches trade freshness and complexity for latency and origin-load reduction. Placement, key design, invalidation, eviction, and failure behavior define correctness.", "Choose cache-aside, read-through, write-through, or write-behind deliberately; add TTL jitter and prevent stampedes on hot misses.", "Cache only with an explicit freshness contract and a safe miss path."),
+  "CDNs & edge delivery": authContent("CDNs serve cacheable content near users and shield origins from bandwidth and request load.", "Define cache keys and directives carefully, version static assets, purge selectively, and keep personalized or sensitive responses from shared caches.", "Move stable bytes outward while preserving correct variation and access control."),
+  "Backpressure & load shedding": authContent("Backpressure slows producers when consumers are saturated; load shedding rejects lower-value work before overload causes a total collapse.", "Bound queues and concurrency, propagate deadlines, return explicit overload signals, and prioritize critical operations.", "A controlled rejection is safer than unbounded waiting and cascading failure."),
+  "CAP & PACELC": authContent("During a network partition, a distributed system must trade immediate consistency against availability. PACELC also highlights the normal-operation tradeoff between latency and consistency.", "Classify decisions per operation rather than labeling an entire product CP or AP; state what clients observe during partition and after recovery.", "Use CAP and PACELC to explain concrete behavior, not to assign simplistic database labels."),
+  "Consistency models": authContent("Consistency models define which values operations may observe, from linearizable and serializable behavior to causal, session, and eventual guarantees.", "Apply strong guarantees to invariants such as unique ownership and weaker models to tolerant views such as counters or feeds.", "Promise the weakest model that safely supports each business invariant—and document it."),
+  "Distributed transactions": authContent("Atomic change across services or stores requires coordination that affects latency and availability. Often the domain can tolerate staged progress with compensation.", "Keep transactions within one owner where possible; otherwise compare two-phase commit with sagas, outbox delivery, and reconciliation.", "Reduce cross-boundary atomicity before adding distributed coordination."),
+  "Consensus & leader election": authContent("Consensus protocols let nodes agree on an ordered value despite failures; leader election assigns a coordinator for a term. Quorums and durable logs underpin safety.", "Use a proven coordination system, understand majority availability, fence stale leaders, and avoid implementing a custom consensus protocol.", "Delegate consensus to mature infrastructure and design for loss of quorum."),
+  "Distributed IDs & clocks": authContent("Distributed systems need unique identifiers and ordering signals without assuming perfectly synchronized wall clocks.", "Choose UUIDs, time-sortable IDs, ranges, or a generator service based on ordering, privacy, index locality, and availability needs; use monotonic time for durations.", "Separate uniqueness, rough chronology, and causal ordering—they are different requirements."),
+  "Queues & pub-sub": authContent("Queues distribute work among consumers; publish-subscribe delivers events to multiple interested subscriptions. Both decouple timing and availability.", "Define ownership, retention, retry, dead-letter, ordering, and consumer-scaling behavior before selecting a broker.", "Choose messaging semantics from the communication pattern and recovery needs."),
+  "Event streaming": authContent("An event stream is an ordered, durable log that consumers read independently and can replay from offsets.", "Partition by an ordering key, version event schemas compatibly, track lag, and make consumers rebuildable from retained history.", "Treat events as durable contracts and consumers as independent state machines."),
+  "Delivery semantics": authContent("At-most-once may lose work, at-least-once may duplicate it, and effective exactly-once behavior requires coordinated state and constrained boundaries.", "Assume redelivery, acknowledge only after durable processing, deduplicate with stable IDs, and test crash points.", "Design consumers for the broker behavior you can actually guarantee."),
+  "Sagas & orchestration": authContent("A saga coordinates a long-running business process through local transactions and compensating actions, either by orchestration or choreography.", "Persist workflow state, use an outbox, define timeouts and compensation limits, and expose pending or failed states instead of pretending instant atomicity.", "Make partial progress and recovery first-class domain states."),
+  "Timeouts & retries": authContent("Timeouts bound waiting; retries can recover transient failures but multiply load and side effects when used carelessly.", "Set deadlines from the caller budget, retry only safe failures with exponential backoff and jitter, and cap attempts across the request chain.", "Every remote call needs a timeout; every retry needs a budget and safety argument."),
+  Idempotency: authContent("An idempotent operation has the same intended effect when repeated, making retries and duplicate delivery safer.", "Accept a scoped idempotency key, store the outcome atomically with the change, and return the original result for valid repeats.", "Design duplicate handling at the mutation boundary, not as an afterthought."),
+  "Circuit breakers & bulkheads": authContent("Circuit breakers stop calls to a failing dependency; bulkheads isolate capacity so one failure cannot consume every worker, connection, or queue slot.", "Use bounded pools per dependency, open circuits from meaningful failure signals, probe recovery carefully, and expose fallback behavior.", "Contain failure before it spreads through shared resources."),
+  "Rate limiting": authContent("Rate limits protect shared capacity and fairness using fixed windows, sliding windows, token buckets, or leaky buckets.", "Limit by authenticated tenant and operation cost, allow controlled bursts, return retry guidance, and coordinate enforcement where global limits matter.", "Align quotas with resource cost and product policy, not only raw request counts."),
+  "Disaster recovery": authContent("Disaster recovery defines how service and data return after regional, operator, security, or infrastructure loss through RTO and RPO targets.", "Maintain isolated, tested backups; automate restoration; document dependencies; and rehearse failover, failback, and data reconciliation.", "A recovery plan is credible only after a timed restoration exercise."),
+  "Security boundaries": authContent("Security architecture identifies identities, assets, trust zones, data classifications, and permitted flows, then applies least privilege and defense in depth.", "Threat-model entry points and service links, centralize identity, encrypt transport and storage, rotate secrets, and authorize at each protected resource.", "Draw trust boundaries early and enforce them independently at every crossing."),
+  "Observability & SLOs": authContent("Metrics, logs, and traces explain behavior; service-level objectives define acceptable reliability from the user perspective and create an error budget.", "Choose indicators for availability and latency, propagate trace context, use structured events, and alert on actionable symptoms or rapid budget burn.", "Observe user outcomes and critical paths, not merely machine health."),
+  "Deployment strategies": authContent("Rolling, blue-green, and canary deployments trade infrastructure cost, feedback speed, and rollback characteristics.", "Build immutable artifacts, separate deployment from release, use health gates and progressive traffic, and keep schema changes backward compatible.", "Make releases small, observable, and reversible across code and data."),
+  "Multi-region design": authContent("Multi-region systems improve locality and disaster tolerance but add replication lag, routing, conflict, and operational complexity.", "Choose active-passive or active-active per workload, define data residency and write ownership, and test behavior during isolation and recovery.", "Add regions for explicit latency or resilience goals and specify the partition behavior."),
+  "Cost & sustainability": authContent("Architecture cost includes steady compute, storage, transfer, managed services, operational labor, and inefficient overprovisioning.", "Attribute spend by workload, autoscale within safety bounds, tier cold data, reduce cross-region transfer, and compare optimization effort with expected savings.", "Treat cost as a quality attribute and optimize without eroding reliability targets."),
+  "URL shortener": authContent("A URL shortener maps compact unique keys to destination URLs under a read-heavy workload with redirects on the critical path.", "Estimate key space and redirect QPS, generate collision-safe IDs, cache hot mappings, partition by key, and address abuse, expiry, and analytics asynchronously.", "Keep redirects fast and available while moving nonessential analytics off the request path."),
+  "News feed": authContent("A news feed ranks posts from a changing social graph under high fan-out and personalized read requirements.", "Compare fan-out on write, fan-out on read, and a hybrid for high-follower accounts; store feed candidates, rank separately, and paginate with stable cursors.", "Choose where to pay fan-out cost based on publisher and reader distributions."),
+  "Chat system": authContent("Chat combines persistent connections, message durability, per-conversation ordering, presence, fan-out, and multi-device synchronization.", "Route connections through gateways, partition conversations, assign server message IDs, track per-device cursors, and make presence explicitly ephemeral.", "Separate durable messaging guarantees from best-effort realtime signals."),
+  "File storage service": authContent("A file service manages large blob upload, metadata, permissions, sharing, synchronization, and durable retrieval.", "Use multipart direct-to-object-storage uploads, verify integrity, store metadata transactionally, scan asynchronously, version changes, and deliver through signed URLs or a CDN.", "Keep bulk bytes out of application servers while protecting metadata and access decisions."),
+  "Search autocomplete": authContent("Autocomplete returns low-latency ranked suggestions for a prefix while incorporating popularity, freshness, locale, and policy.", "Build compact prefix indexes or tries from an offline stream, cache hot prefixes at the edge, merge personalized candidates carefully, and filter unsafe results.", "Precompute aggressively so the interactive path performs bounded lookup and ranking."),
 });
 
 const codeExamples: Record<string, { title: string; badLabel: string; bad: string; goodLabel: string; good: string }> = {
@@ -1169,9 +1235,10 @@ export default function Home() {
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : "05";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : figmaLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : 400;
+    const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : "06";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : systemDesignLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : 500;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -1195,9 +1262,10 @@ export default function Home() {
     const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseThree = dotnetLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : "05";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : figmaLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : 400;
+    const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : "06";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : systemDesignLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : 500;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -1216,9 +1284,10 @@ export default function Home() {
   const dotnetTopics = dotnetLessons.flatMap((lesson) => lesson.topics);
   const apiTopics = apiLessons.flatMap((lesson) => lesson.topics);
   const figmaTopics = figmaLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : "05";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : figmaTopics;
+  const systemDesignTopics = systemDesignLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : "06";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : systemDesignTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -1383,6 +1452,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("06")} aria-expanded={openCourses.includes("06")}>
+            <span><small>Course 06</small><strong>System Design</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("06") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("06") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>System design,<br />from requirements to scale.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "06" ? Math.round(((courseTopicIndex + 1) / systemDesignTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "06" ? courseTopicIndex + 1 : 0} / {systemDesignTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "06" ? ((courseTopicIndex + 1) / systemDesignTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && systemDesignTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(systemDesignLessons, 500, "Course 06 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -1416,7 +1509,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : figmaLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : systemDesignLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
