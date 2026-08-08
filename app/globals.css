@@ -1,6 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&family=Roboto+Condensed:wght@600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800&family=Roboto+Condensed:wght@600;700;800&family=Roboto+Mono:wght@400;700&display=swap");
 
-:root { --background: #ffffff; --foreground: #1d2230; --font-geist-sans: "Inter", "Segoe UI", Arial, Helvetica, sans-serif; --font-geist-mono: "JetBrains Mono", Consolas, "Courier New", monospace; --font-display: "Roboto Condensed", "Arial Narrow", Arial, sans-serif; }
+:root { --background: #ffffff; --foreground: #1d2230; --font-geist-sans: "Roboto", Arial, Helvetica, sans-serif; --font-geist-mono: "Roboto Mono", Consolas, "Courier New", monospace; --font-display: "Roboto Condensed", "Roboto", "Arial Narrow", Arial, sans-serif; }
 * { box-sizing: border-box; padding: 0; margin: 0; }
 html { background: var(--background); color-scheme: light; }
 body { min-height: 100vh; color: var(--foreground); background: var(--background); font-family: var(--font-geist-sans); -webkit-font-smoothing: antialiased; }
