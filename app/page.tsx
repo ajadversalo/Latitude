@@ -65,7 +65,16 @@ const authLessons: Lesson[] = [
   { number: "06", title: "Security & operations", duration: "96 min", topics: ["State, nonce & PKCE", "Redirect URI security", "CSRF, XSS & token storage", "Sender-constrained tokens", "JWKS & key rotation", "Revocation & logout", "Threat modeling & monitoring"] },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons];
+const dotnetLessons: Lesson[] = [
+  { number: "01", title: "Solution anatomy", duration: "62 min", topics: ["Solution & project files", "Program.cs", "appsettings files", "launchSettings.json", "Dependencies & NuGet"] },
+  { number: "02", title: "The API boundary", duration: "78 min", topics: ["Controllers vs Minimal APIs", "Endpoints & routing", "Contracts & DTOs", "Middleware pipeline", "Filters", "OpenAPI documentation"] },
+  { number: "03", title: "Application & domain", duration: "86 min", topics: ["Application layer", "Feature folders", "Domain entities", "Value objects", "Use cases & services", "Validation & mapping"] },
+  { number: "04", title: "Infrastructure & data", duration: "88 min", topics: ["Infrastructure project", "DbContext", "Entity configurations", "EF Core migrations", "Repositories", "External service clients", "Options & secrets"] },
+  { number: "05", title: "Tests & shared tooling", duration: "72 min", topics: ["Unit test project", "Integration test project", "WebApplicationFactory", "Directory.Build.props", "global.json & SDK pinning", "Analyzers & formatting"] },
+  { number: "06", title: "Production practices", duration: "104 min", topics: ["Dependency direction", "DI service lifetimes", "Async & cancellation", "Problem Details", "Logging & observability", "Authentication & authorization", "Health checks", "Publishing & deployment"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -83,6 +92,15 @@ const authLessonMeaning: Record<string, string> = {
   "04": "How clients obtain and renew authority across different environments",
   "05": "Trust boundaries for web, browser, native, API, and multi-tenant systems",
   "06": "Attack resistance, key lifecycle, revocation, detection, and incident readiness",
+};
+
+const dotnetLessonMeaning: Record<string, string> = {
+  "01": "The files that define, configure, build, and start an ASP.NET Core solution",
+  "02": "The HTTP-facing boundary: routes, request contracts, pipeline behavior, and documentation",
+  "03": "Business use cases and domain rules kept independent from delivery and persistence details",
+  "04": "Database access, external integrations, configuration, and other replaceable implementation details",
+  "05": "Fast feedback, realistic API tests, consistent builds, and shared engineering policy",
+  "06": "Dependency safety, runtime correctness, security, diagnostics, health, and deployment",
 };
 
 const expandedName: Record<string, string> = {
@@ -134,6 +152,47 @@ Object.assign(topicCopy, {
   "JWKS & key rotation": authContent("A JWKS publishes public verification keys. Safe rotation overlaps old and new keys long enough for issued tokens to expire while verifiers refresh keys from a trusted issuer.", "Select an allowed key by kid, refresh on an unknown key with rate limits, cache according to policy, and reject keys or JWKS URLs supplied by the token itself.", "Rotate deliberately and anchor key discovery to the configured issuer."),
   "Revocation & logout": authContent("Logout spans local application sessions, authorization-server sessions, access tokens, and refresh tokens. Clearing one browser cookie does not necessarily revoke the others.", "Terminate local state, revoke refresh credentials where supported, propagate back-channel logout when required, and keep access tokens short-lived because distributed revocation is not instantaneous.", "Define exactly which sessions and credentials each logout action terminates."),
   "Threat modeling & monitoring": authContent("Authentication systems need explicit assets, actors, trust boundaries, abuse cases, and detection signals. Secure protocol choices still fail under weak recovery, configuration, or operations.", "Monitor authorization errors, code and refresh-token reuse, issuer mismatches, impossible travel, MFA changes, recovery attempts, key changes, and anomalous client or scope activity without logging secrets.", "Design detection and incident response alongside prevention; assume credentials will eventually be targeted."),
+});
+
+Object.assign(topicCopy, {
+  "Solution & project files": authContent("A solution file groups projects for tooling, while each .csproj is the actual MSBuild project definition: target framework, package references, project references, compiler settings, and build items.", "Keep deployable apps, reusable libraries, and test suites in separate projects only when the dependency boundary is meaningful. A small API can remain one project until complexity justifies more.", "Projects enforce compile-time boundaries; folders only organize files inside a project."),
+  "Program.cs": authContent("Program.cs is the composition root. It creates the WebApplicationBuilder, registers services and configuration, builds the app, orders middleware, maps endpoints, and starts the host.", "Keep Program.cs readable by grouping registrations behind focused AddApplication, AddInfrastructure, and AddApi extension methods without hiding important middleware order.", "Wire the system at the edge; do not place business logic in the composition root."),
+  "appsettings files": authContent("appsettings.json provides baseline configuration and environment-specific files override it. Environment variables and secret providers can override both through the default configuration pipeline.", "Commit safe defaults and structure, not credentials. Bind related settings to validated option classes and fail at startup when required production values are absent.", "Configuration belongs outside code; secrets belong outside source control."),
+  "launchSettings.json": authContent("Properties/launchSettings.json defines local development launch profiles, URLs, environment variables, and browser behavior for dotnet run and IDE tooling. It is not deployed as production configuration.", "Use it for local ports and ASPNETCORE_ENVIRONMENT=Development. Put real runtime configuration in the deployment platform rather than assuming launch profiles affect production.", "launchSettings.json shapes the developer launch experience, not the deployed app."),
+  "Dependencies & NuGet": authContent("The project file declares framework and package dependencies. ProjectReference creates compile-time links between solution projects; PackageReference resolves versioned NuGet packages.", "Keep the dependency graph directed inward, centralize package versions when the solution grows, commit the lock strategy your team chooses, and remove packages that duplicate framework capabilities.", "Every dependency expands maintenance and security surface; add it deliberately."),
+  "Controllers vs Minimal APIs": authContent("ASP.NET Core supports controller-based APIs and Minimal APIs. Controllers provide conventions, filters, model binding features, and class organization; Minimal APIs offer a compact endpoint model with route groups and endpoint filters.", "Choose by complexity and team needs. Avoid mixing styles without a reason, and keep either approach thin by delegating business work to application use cases.", "The endpoint style is a delivery choice, not the architecture of the whole application."),
+  "Endpoints & routing": authContent("Routing maps HTTP methods and URI templates to endpoint handlers. Route constraints, names, groups, versioning strategy, and resource-oriented URLs form the public API contract.", "Use nouns for resources, HTTP methods for intent, explicit status codes, stable route names for link generation, and route groups or controller prefixes for shared policy.", "Routes are public contracts; change them with the same care as method signatures."),
+  "Contracts & DTOs": authContent("Request and response DTOs define the API wire contract. They should be distinct from EF entities and rich domain objects so persistence or domain refactors do not silently alter JSON.", "Place public contracts near the API feature or in a dedicated Contracts project only when other assemblies genuinely consume them. Make nullability and validation expectations explicit.", "Own the HTTP contract explicitly; never serialize persistence models by accident."),
+  "Middleware pipeline": authContent("Middleware forms an ordered request pipeline. Each component can inspect the request, perform work before and after the next delegate, short-circuit, or transform the response.", "Place exception handling early, then forwarded headers and HTTPS policy as appropriate, routing-related middleware, authentication before authorization, and endpoint execution. Verify order against each middleware's requirements.", "Middleware order is behavior, not formatting."),
+  Filters: authContent("Filters run around controller or endpoint execution at defined stages. They are useful for delivery-layer cross-cutting concerns that need action context, but they should not contain domain rules.", "Use filters for concerns such as consistent result transformation or action-specific auditing. Prefer middleware for concerns applying to the whole HTTP pipeline and policies for authorization.", "Choose the narrowest pipeline hook that has the context the concern requires."),
+  "OpenAPI documentation": authContent("OpenAPI is a machine-readable description of endpoints, parameters, schemas, responses, and security requirements. ASP.NET Core can generate it from endpoint metadata and contracts.", "Document non-success responses, authentication schemes, examples, and stable operation names. Validate the generated document and use it for contract review or client generation.", "Generated documentation is only trustworthy when endpoint metadata is deliberate."),
+  "Application layer": authContent("The application layer coordinates use cases. It accepts application input, loads domain state through abstractions, invokes business behavior, persists results, and returns an outcome without depending on HTTP or database implementations.", "Organize commands and queries around business capabilities. Keep ASP.NET types, EF queries tied to a provider, and serialization concerns outside this layer.", "Application code describes what the system does; infrastructure describes how external work is performed."),
+  "Feature folders": authContent("Feature folders organize code vertically by capability—such as Orders/Create—instead of scattering one change across Controllers, Services, Validators, and DTO folders.", "Keep an endpoint, request contract, validator, handler, and mapping close when they change together. Share only stable domain concepts and infrastructure abstractions.", "Optimize structure for the changes developers make, not for a taxonomy of class suffixes."),
+  "Domain entities": authContent("A domain entity has stable identity and protects business invariants through behavior. It is more than a mutable property bag and should not depend on ASP.NET Core or EF Core APIs.", "Construct entities only in valid states, expose intention-revealing methods, keep setters private where appropriate, and raise domain events for meaningful state transitions when needed.", "Put business rules with the model that owns the state they protect."),
+  "Value objects": authContent("A value object is defined by its attributes rather than an identity. It is typically immutable, validates itself at creation, and uses structural equality.", "Represent EmailAddress, Money, DateRange, or OrderNumber as types when the value has rules or domain meaning that primitives cannot express safely.", "Replace ambiguous primitives with small types that make invalid states harder to represent."),
+  "Use cases & services": authContent("A use-case handler coordinates one application action. Domain services hold domain logic that does not naturally belong to one entity; infrastructure services implement external capabilities.", "Name use cases after user intent such as PlaceOrder, not generic Manager or Helper classes. Keep transactions and orchestration explicit.", "A service should have a precise responsibility that its name can communicate."),
+  "Validation & mapping": authContent("Input validation checks whether a request is structurally acceptable; domain validation protects business invariants. Mapping translates between API contracts, application inputs, domain types, and persistence shapes.", "Reject malformed input at the boundary, create domain types through validated factories, and keep mappings explicit enough that contract changes are reviewed.", "Boundary validation cannot replace invariants enforced by the domain."),
+  "Infrastructure project": authContent("Infrastructure contains replaceable details: EF Core, file storage, email, queues, clocks, identity provider clients, and other adapters. It implements interfaces owned by inner application or domain projects.", "Register adapters through AddInfrastructure and keep vendor-specific types from leaking into the application layer.", "Infrastructure depends inward; business policy must not depend on infrastructure."),
+  DbContext: authContent("An EF Core DbContext represents a unit of work and tracks entity changes. AddDbContext registers it as scoped by default, matching the common one-unit-of-work-per-request model.", "Keep DbContext focused on persistence, define DbSet properties intentionally, apply entity configurations, and avoid using one context concurrently across threads.", "DbContext is short-lived and not thread-safe; do not turn it into a singleton."),
+  "Entity configurations": authContent("IEntityTypeConfiguration classes keep EF Core mapping rules—keys, constraints, conversions, relationships, indexes, and table names—out of domain entity classes.", "Place configurations beside persistence concerns and apply them from the assembly. Encode database constraints that mirror critical invariants.", "Persistence mapping belongs in infrastructure even when it maps domain types."),
+  "EF Core migrations": authContent("Migrations are versioned transformations from one database schema to the next. They are deployable artifacts that require review, ordering, and an operational rollout plan.", "Generate migrations from the intended model change, inspect destructive operations and SQL, test against production-like data, and separate application startup from privileged migration execution in controlled environments.", "Treat schema changes as production changes, not generated trivia."),
+  Repositories: authContent("A repository provides a domain-oriented collection abstraction when it adds a useful boundary. EF Core's DbContext already supplies repository and unit-of-work behavior, so generic wrappers often add indirection without value.", "Create repositories around aggregates or complex persistence contracts, not one generic CRUD repository per table. For simple applications, use DbContext directly from the application boundary if dependency policy permits.", "Add a repository for a domain or testing need—not because every project template has one."),
+  "External service clients": authContent("Outbound HTTP and SDK integrations are infrastructure adapters. Typed HttpClient registrations provide configuration, handler pooling, resilience integration, and a focused API for the remote service.", "Define an application-owned interface, implement it with a typed client, set timeouts, propagate cancellation, handle transient failures carefully, and avoid retrying unsafe operations blindly.", "Remote calls are unreliable boundaries; make timeout, failure, and idempotency behavior explicit."),
+  "Options & secrets": authContent("The options pattern binds related configuration into typed classes and can validate values at startup. Secrets should come from environment variables or a managed secret store, never committed appsettings files.", "Use ValidateDataAnnotations or custom validation plus ValidateOnStart. Choose IOptions, IOptionsSnapshot, or IOptionsMonitor according to lifetime and reload needs.", "Fail fast on invalid configuration and keep secret values out of logs."),
+  "Unit test project": authContent("Unit tests verify isolated business behavior without starting the host, database, network, or filesystem. They belong in a separate test project referencing the code under test.", "Mirror feature names, test observable behavior and invariants, use real value objects, and fake only external boundaries. Keep tests deterministic and fast.", "Unit tests should make domain rules safe to change, not duplicate implementation details."),
+  "Integration test project": authContent("Integration tests verify multiple real components together: routing, middleware, serialization, authentication, EF mappings, or external adapters with controlled infrastructure.", "Use a separate project, realistic test configuration, isolated data, and containers or an appropriate test database when provider behavior matters.", "Test the seams where configuration and components can disagree."),
+  WebApplicationFactory: authContent("WebApplicationFactory boots the ASP.NET Core application in a test host and exposes an HttpClient for end-to-end requests without an external server process.", "Override services and configuration for tests, use a dedicated environment, authenticate through a test scheme when appropriate, and assert status codes plus response contracts.", "Exercise the real middleware and endpoint pipeline for high-value API scenarios."),
+  "Directory.Build.props": authContent("Directory.Build.props applies shared MSBuild properties to projects beneath its directory. It centralizes nullable settings, warnings, language version, analyzers, and other build policy.", "Keep broadly applicable settings at the solution root and use nearer files only for intentional sub-tree overrides. Avoid hiding surprising project-specific behavior globally.", "Central build policy prevents projects from silently drifting apart."),
+  "global.json & SDK pinning": authContent("global.json controls how the .NET CLI selects an installed SDK. It makes local machines and CI more reproducible while rollForward policy controls acceptable updates.", "Pin a supported feature band or version appropriate to the team, update deliberately, and ensure CI installs the same SDK.", "The target framework and the SDK used to build it are related but different choices."),
+  "Analyzers & formatting": authContent("Compiler warnings, Roslyn analyzers, .editorconfig, and dotnet format encode code-quality and style rules as automated feedback.", "Enable nullable reference types, treat selected warnings as errors, adopt analyzers incrementally, and enforce formatting in CI without turning subjective rules into constant noise.", "Automate repeatable review comments so humans can focus on design."),
+  "Dependency direction": authContent("In a layered or clean architecture, compile-time dependencies point toward business policy. API and Infrastructure can reference Application or Domain; the domain should not reference ASP.NET Core, EF Core, or vendor SDKs.", "Use project references to enforce the intended graph, then compose concrete infrastructure implementations in the API's composition root.", "A folder diagram is aspirational; project references make the boundary real."),
+  "DI service lifetimes": authContent("Transient creates a service each resolution, scoped creates one per request scope, and singleton creates one for the app lifetime. Capturing a scoped dependency in a singleton promotes it incorrectly and can leak request state.", "Use scoped for DbContext and request units of work, singleton only for thread-safe shared services, and let the container dispose objects it creates.", "Choose lifetime from state, concurrency, ownership, and dependency lifetimes—not habit."),
+  "Async & cancellation": authContent("Async I/O releases request threads while awaiting databases or networks. CancellationToken communicates that the client disconnected or a deadline expired, allowing cooperative work to stop.", "Pass cancellation tokens from endpoints through application handlers to EF Core and HttpClient. Avoid blocking on Task.Result and do not start fire-and-forget work inside a request.", "Async must flow through the call chain; cancellation only works when propagated."),
+  "Problem Details": authContent("Problem Details provides a standard JSON error shape with type, title, status, detail, instance, and safe extensions. Central exception handling can map known failures consistently.", "Return validation problems as 400, authentication failures as 401, authorization failures as 403, missing resources as 404, conflicts as 409, and unexpected failures as sanitized 500 responses.", "Make errors predictable without leaking stack traces, SQL, secrets, or internal topology."),
+  "Logging & observability": authContent("Structured logs describe events with named properties. Traces connect work across services, and metrics summarize rates, latency, errors, and saturation.", "Use ILogger message templates, correlation and trace IDs, OpenTelemetry instrumentation, redaction, and domain-relevant measurements. Never log credentials or sensitive payloads.", "Observability should answer what failed, where, for whom, and since when."),
+  "Authentication & authorization": authContent("Authentication handlers validate credentials and build a ClaimsPrincipal. Authorization policies evaluate requirements for an endpoint or resource; authentication alone never grants blanket access.", "Configure schemes explicitly, validate issuer and audience for bearer tokens, prefer named policies over scattered role strings, and perform resource-based checks where ownership matters.", "Protect endpoints by default and make exceptional anonymous access explicit."),
+  "Health checks": authContent("Health checks expose whether the process is alive and whether it is ready to receive traffic. Readiness may depend on critical infrastructure; liveness should not fail merely because a downstream service is temporarily unavailable.", "Expose separate liveness and readiness endpoints, tag checks, keep them fast, secure detailed diagnostics, and align orchestrator probes with startup behavior.", "A bad health check can amplify an outage by restarting healthy processes."),
+  "Publishing & deployment": authContent("dotnet publish produces deployment-ready output for a target framework, runtime, and configuration. Deployment also includes configuration injection, database rollout, health verification, rollback, and observability.", "Build once in CI, test the artifact, run migrations as a controlled step, start with Production configuration, bind to the platform port, and use rolling or blue-green releases for safe rollback.", "Deployment is a repeatable system change, not copying the bin folder."),
 });
 
 const codeExamples: Record<string, { title: string; badLabel: string; bad: string; goodLabel: string; good: string }> = {
@@ -948,6 +1007,47 @@ Object.assign(topicCopy, {
   "WET": { intro: "Write Everything Twice—or Waste Everyone’s Time—is the costly opposite of DRY: duplicated knowledge that must be found and updated in several places.", practice: "If a fee rule exists in checkout, admin, and reporting, a change may fix one path while leaving two inconsistent.", takeaway: "Give each business rule one authoritative home and test it there.", nodes: ["Many copies", "One change", "Inconsistency"] },
 });
 
+const dotnetPlacement: Record<string, { path: string; avoid: string }> = {
+  "Solution & project files": { path: `Store.slnx\nsrc/Store.Api/Store.Api.csproj\nsrc/Store.Application/Store.Application.csproj\nsrc/Store.Domain/Store.Domain.csproj\nsrc/Store.Infrastructure/Store.Infrastructure.csproj\ntests/Store.UnitTests/Store.UnitTests.csproj\ntests/Store.IntegrationTests/Store.IntegrationTests.csproj`, avoid: `Store.Api/\n  Everything.cs\n  Tests.cs\n\n// One assembly allows every concern to depend on every other concern.` },
+  "Program.cs": { path: `src/Store.Api/Program.cs\n\n// Composition root: register dependencies, order middleware, map endpoints.`, avoid: `Program.cs\n\n// Business rules, SQL queries, mapping, and endpoint bodies all mixed into startup.` },
+  "appsettings files": { path: `src/Store.Api/\n  appsettings.json\n  appsettings.Development.json\n\nDeployment environment:\n  Payments__ApiKey=<secret>`, avoid: `appsettings.json\n  \"ApiKey\": \"production-secret\"\n\n// Credentials committed to source control.` },
+  "launchSettings.json": { path: `src/Store.Api/Properties/launchSettings.json\n\n// Local profiles, ports, and Development environment only.`, avoid: `Properties/launchSettings.json\n\n// Treated as if it configures the deployed service.` },
+  "Dependencies & NuGet": { path: `Directory.Packages.props\nsrc/*/*.csproj\n\nDomain ← Application ← Infrastructure / Api`, avoid: `Store.Domain.csproj\n  PackageReference: EF Core\n  ProjectReference: Infrastructure\n\n// Policy depends on details.` },
+  "Controllers vs Minimal APIs": { path: `src/Store.Api/Features/Orders/Create/Endpoint.cs\n// or\nsrc/Store.Api/Controllers/OrdersController.cs\n\n// Both delegate to Application.`, avoid: `OrdersController.cs\n\n// HTTP, validation, pricing, persistence, and email in one action.` },
+  "Endpoints & routing": { path: `src/Store.Api/Features/Orders/OrdersEndpoints.cs\n\nPOST   /api/orders\nGET    /api/orders/{id}\nDELETE /api/orders/{id}`, avoid: `POST /DoCreateNewOrder\nPOST /GetOrder\nPOST /DeleteTheOrder\n\n// RPC verbs replace HTTP semantics.` },
+  "Contracts & DTOs": { path: `src/Store.Api/Features/Orders/Create/\n  CreateOrderRequest.cs\n  OrderResponse.cs\n\n// Explicit wire models.`, avoid: `return Results.Ok(efOrderEntity);\n\n// Database shape becomes the public JSON contract.` },
+  "Middleware pipeline": { path: `src/Store.Api/Middleware/\n  CorrelationIdMiddleware.cs\n  RequestLoggingMiddleware.cs\n\nProgram.cs controls execution order.`, avoid: `Middleware/BusinessRulesMiddleware.cs\n\n// Domain decisions hidden in a global HTTP pipeline component.` },
+  Filters: { path: `src/Store.Api/Filters/IdempotencyFilter.cs\n\n// Endpoint/action context required; no domain policy.`, avoid: `Filters/RefundEligibilityFilter.cs\n\n// Business rule coupled to ASP.NET execution.` },
+  "OpenAPI documentation": { path: `src/Store.Api/OpenApi/\n  SecuritySchemeTransformer.cs\n  Examples/\n\nEndpoint metadata stays beside each feature.`, avoid: `swagger.json edited by hand\n\n// Documentation drifts from executable endpoints.` },
+  "Application layer": { path: `src/Store.Application/\n  Abstractions/\n  Orders/PlaceOrder/\n    Command.cs\n    Handler.cs\n    Result.cs`, avoid: `src/Store.Application/\n  Controllers/\n  DbContext/\n  HttpClients/\n\n// Inner policy imports outer frameworks.` },
+  "Feature folders": { path: `Features/Orders/Place/\n  Endpoint.cs\n  Request.cs\n  Validator.cs\n  Handler.cs\n  Response.cs`, avoid: `Controllers/OrdersController.cs\nServices/OrderService.cs\nDtos/OrderDto.cs\nValidators/OrderValidator.cs\n\n// One change touches every horizontal folder.` },
+  "Domain entities": { path: `src/Store.Domain/Orders/\n  Order.cs\n  OrderLine.cs\n  OrderStatus.cs\n  Events/OrderPlaced.cs`, avoid: `src/Store.Api/Models/Order.cs\n\n// Public setters and framework attributes define the business model.` },
+  "Value objects": { path: `src/Store.Domain/Common/\n  Money.cs\n  EmailAddress.cs\n  DateRange.cs`, avoid: `string email\ndecimal amount\nstring currency\n\n// Rules and meaning are repeated at every call site.` },
+  "Use cases & services": { path: `src/Store.Application/Orders/Refund/\n  RefundOrderCommand.cs\n  RefundOrderHandler.cs\n  RefundOrderResult.cs`, avoid: `src/Store.Application/Services/OrderManager.cs\n\n// Generic manager grows without a coherent boundary.` },
+  "Validation & mapping": { path: `src/Store.Api/Features/Orders/Create/RequestValidator.cs\nsrc/Store.Api/Features/Orders/Create/Mapping.cs\nsrc/Store.Domain/Orders/Quantity.cs`, avoid: `Common/AutoMapperProfile.cs\n\n// Magic global mappings plus DTO-only validation.` },
+  "Infrastructure project": { path: `src/Store.Infrastructure/\n  Persistence/\n  Payments/\n  Email/\n  Time/\n  DependencyInjection.cs`, avoid: `src/Store.Application/StripeService.cs\nsrc/Store.Domain/SqlOrder.cs\n\n// Vendor details leak inward.` },
+  DbContext: { path: `src/Store.Infrastructure/Persistence/StoreDbContext.cs\n\n// Scoped unit of work; never shared concurrently.`, avoid: `src/Store.Api/Data/GlobalDbContext.cs\n\n// Singleton context shared across requests.` },
+  "Entity configurations": { path: `src/Store.Infrastructure/Persistence/Configurations/\n  OrderConfiguration.cs\n  OrderLineConfiguration.cs`, avoid: `src/Store.Domain/Order.cs\n  [Table]\n  [Column]\n  [ForeignKey]\n\n// Persistence metadata shapes the domain.` },
+  "EF Core migrations": { path: `src/Store.Infrastructure/Persistence/Migrations/\nartifacts/migrate.sql\n\n// Generated, reviewed, tested, deployed once.`, avoid: `Program.cs → Database.EnsureCreated()\n\n// Every replica attempts unmanaged schema creation.` },
+  Repositories: { path: `src/Store.Application/Abstractions/IOrders.cs\nsrc/Store.Infrastructure/Persistence/EfOrders.cs\n\n// Aggregate-specific operations only when useful.`, avoid: `IGenericRepository<T>\n  GetAll / Get / Insert / Update / Delete\n\n// EF is wrapped without adding a domain boundary.` },
+  "External service clients": { path: `src/Store.Infrastructure/Inventory/\n  InventoryClient.cs\n  InventoryOptions.cs\n  InventoryResponse.cs`, avoid: `new HttpClient() inside OrderService\n\n// No lifecycle, timeout, cancellation, or integration boundary.` },
+  "Options & secrets": { path: `src/Store.Infrastructure/Payments/PaymentOptions.cs\nDeployment secret store:\n  Payments__ApiKey`, avoid: `Constants.cs\n  public const string ApiKey = \"...\";\n\n// Secret compiled into the application.` },
+  "Unit test project": { path: `tests/Store.UnitTests/\n  Orders/OrderTests.cs\n  MoneyTests.cs\n\n// References Domain and Application only.`, avoid: `src/Store.Api/Tests/\n\n// Tests compiled into the production project.` },
+  "Integration test project": { path: `tests/Store.IntegrationTests/\n  Orders/CreateOrderTests.cs\n  Infrastructure/PostgresFixture.cs`, avoid: `UnitTests/OrdersControllerTests.cs\n\n// Every collaborator mocked; actual API boundary remains untested.` },
+  WebApplicationFactory: { path: `tests/Store.IntegrationTests/StoreApiFactory.cs\n\n// Boots the real Program.cs and replaces only external infrastructure.`, avoid: `tests/TestApiProgram.cs\n\n// A separately built test application drifts from production startup.` },
+  "Directory.Build.props": { path: `Directory.Build.props\n\nNullable = enable\nTreatWarningsAsErrors = true\nAnalysisLevel = latest-recommended`, avoid: `src/*/*.csproj\n\n// Compiler rules copied with different values in every project.` },
+  "global.json & SDK pinning": { path: `global.json\n\n{\n  \"sdk\": {\n    \"version\": \"10.0.100\",\n    \"rollForward\": \"latestFeature\"\n  }\n}`, avoid: `No global.json\n\n// Local development and CI silently select unrelated SDKs.` },
+  "Analyzers & formatting": { path: `.editorconfig\nDirectory.Build.props\n\nCI:\n  dotnet format --verify-no-changes\n  dotnet build --warnaserror`, avoid: `Style and correctness rules exist only in review comments.\n\n// Feedback is slow and inconsistent.` },
+  "Dependency direction": { path: `Store.Api ─────────────┐\n    ↓                    │ runtime composition\nStore.Application → Store.Domain\n    ↑\nStore.Infrastructure ────┘`, avoid: `Domain → Infrastructure → EF Core\nApplication → Api → HttpContext\n\n// Business policy depends outward.` },
+  "DI service lifetimes": { path: `Scoped:    DbContext, unit of work, request services\nTransient: stateless lightweight operations\nSingleton: thread-safe shared services`, avoid: `Singleton ReportService\n  → captures scoped AppDbContext\n\n// Request state becomes application state.` },
+  "Async & cancellation": { path: `Endpoint CancellationToken\n  ↓\nUse-case handler\n  ↓\nEF Core / HttpClient async calls`, avoid: `.Result / .Wait()\nnew CancellationToken()\nfire-and-forget Task inside request\n\n// Threads block and abandoned work continues.` },
+  "Problem Details": { path: `src/Store.Api/Errors/\n  DomainExceptionHandler.cs\n  ValidationExceptionHandler.cs\n\napplication/problem+json`, avoid: `return Results.Json(new {\n  error = exception.Message,\n  stack = exception.StackTrace\n});\n\n// Internals leak and clients receive inconsistent shapes.` },
+  "Logging & observability": { path: `src/Store.Api/Observability/\n  OpenTelemetryExtensions.cs\n\nILogger + traces + metrics\ncorrelation/trace IDs`, avoid: `Console.WriteLine($\"User {email}, token {token}\");\n\n// Secrets leak and text cannot be queried reliably.` },
+  "Authentication & authorization": { path: `src/Store.Api/Security/\n  AuthorizationPolicies.cs\n  OrderAuthorizationHandler.cs\n\nRequireAuthorization by default.`, avoid: `if (User.Identity?.IsAuthenticated == true) allow();\n\n// Identity is mistaken for permission.` },
+  "Health checks": { path: `/health/live   → process is running\n/health/ready  → critical dependencies ready\n\nDetailed output restricted.`, avoid: `/health → calls every partner and runs a heavy query\n\n// A downstream outage causes healthy instances to restart.` },
+  "Publishing & deployment": { path: `artifacts/app/           // immutable dotnet publish output\nartifacts/migrate.sql   // reviewed schema change\nrender.yaml / Dockerfile / pipeline\n\nBuild → test → migrate → release → verify`, avoid: `SSH → git pull → dotnet run\n\n// Every server rebuilds and mutates the database differently.` },
+};
+
 export default function Home() {
   const [openLessons, setOpenLessons] = useState<number[]>([0]);
   const [activeTopic, setActiveTopic] = useState("Objects & classes");
@@ -988,9 +1088,10 @@ export default function Home() {
 
   const selectTopic = (topic: string) => {
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : "02";
-    const courseLessons = inCourseOne ? lessons : authLessons;
-    const offset = inCourseOne ? 0 : 100;
+    const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : "03";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : dotnetLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : 200;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -1011,9 +1112,10 @@ export default function Home() {
   const resumeSavedTopic = () => {
     if (!savedTopic) return;
     const inCourseOne = lessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : "02";
-    const courseLessons = inCourseOne ? lessons : authLessons;
-    const offset = inCourseOne ? 0 : 100;
+    const inCourseTwo = authLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : "03";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : dotnetLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : 200;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -1029,13 +1131,21 @@ export default function Home() {
   const activeLesson = allCourseLessons.find((lesson) => lesson.topics.includes(activeTopic)) ?? lessons[0];
   const oopTopics = lessons.flatMap((lesson) => lesson.topics);
   const authTopics = authLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : "02";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : authTopics;
+  const dotnetTopics = dotnetLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : "03";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : dotnetTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
-  const codeExample = codeExamples[activeTopic];
+  const placement = dotnetPlacement[activeTopic];
+  const codeExample = codeExamples[activeTopic] ?? (placement ? {
+    title: `Give ${activeTopic.toLowerCase()} a clear home`,
+    badLabel: "Avoid unclear ownership",
+    bad: placement.avoid,
+    goodLabel: "Recommended structure",
+    good: `${placement.path}\n\n// ${copy.takeaway}`,
+  } : undefined);
 
   const renderLessons = (courseLessons: Lesson[], offset: number, label: string) => (
     <nav className={styles.lessonNav} aria-label={label}>
@@ -1117,6 +1227,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("03")} aria-expanded={openCourses.includes("03")}>
+            <span><small>Course 03</small><strong>ASP.NET Core Web API</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("03") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("03") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>ASP.NET Core APIs,<br />structured for change.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "03" ? Math.round(((courseTopicIndex + 1) / dotnetTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "03" ? courseTopicIndex + 1 : 0} / {dotnetTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "03" ? ((courseTopicIndex + 1) / dotnetTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && dotnetTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(dotnetLessons, 200, "Course 03 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -1150,7 +1284,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : authLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : dotnetLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
@@ -1160,7 +1294,7 @@ export default function Home() {
             </div>
             <div className={styles.bodyCopy}>
               <div className={styles.appliedContext}>
-                <span>{activeCourse === "02" ? "Implementation guidance" : "Example context"}</span>
+                <span>{activeCourse === "01" ? "Example context" : "Implementation guidance"}</span>
                 <p>{copy.practice}</p>
               </div>
               {codeExample && (
