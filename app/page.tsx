@@ -103,7 +103,19 @@ const companyBestPracticesLessons: Lesson[] = [
   },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons];
+const rabbitMqLessons: Lesson[] = [
+  { number: "01", title: "Messaging foundations", duration: "72 min", topics: ["Why asynchronous messaging", "RabbitMQ architecture", "AMQP 0-9-1 model", "Connections & channels", "Virtual hosts"] },
+  { number: "02", title: "Exchanges, queues & routing", duration: "96 min", topics: ["Declaring topology", "Direct exchanges", "Fanout exchanges", "Topic exchanges", "Headers exchanges", "Default exchange & bindings"] },
+  { number: "03", title: "Publishing reliably", duration: "102 min", topics: ["Message properties & metadata", "Publisher confirms", "Mandatory publishing & returns", "Durable topology & persistent messages", "Message ordering", "Publisher connection recovery"] },
+  { number: "04", title: "Consuming safely", duration: "112 min", topics: ["Consumer acknowledgements", "Prefetch & flow control", "Competing consumers", "Idempotent consumers", "Consumer cancellation", "Graceful shutdown"] },
+  { number: "05", title: "Failures, retries & dead letters", duration: "118 min", topics: ["Negative acknowledgements", "Dead-letter exchanges", "Retry topologies", "Poison messages", "Time-to-live & expiration", "Quorum queue delivery limits"] },
+  { number: "06", title: "Patterns & workflows", duration: "126 min", topics: ["Work queues", "Publish-subscribe", "Request-reply", "Correlation identifiers", "Saga messaging", "Outbox & inbox patterns"] },
+  { number: "07", title: "Queues at scale", duration: "116 min", topics: ["Classic vs quorum queues", "Streams & super streams", "Lazy queue behavior", "Single active consumer", "Priority queues", "Backpressure & capacity planning"] },
+  { number: "08", title: "Security & operations", duration: "124 min", topics: ["TLS & client authentication", "Users, permissions & vhosts", "Resource alarms", "Metrics & observability", "Clustering & partitions", "Backup, recovery & upgrades"] },
+  { number: "09", title: "Production architecture", duration: "138 min", topics: ["High availability design", "Federation & Shovel", "Schema evolution", "Testing message-driven systems", "Performance tuning", "Production readiness review"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons, ...rabbitMqLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -160,6 +172,18 @@ const systemDesignLessonMeaning: Record<string, string> = {
 
 const companyBestPracticesLessonMeaning: Record<string, string> = {
   "01": "Practical cloud governance, delivery planning, and implementation-ready front-end work for small and growing teams",
+};
+
+const rabbitMqLessonMeaning: Record<string, string> = {
+  "01": "The broker, protocol, isolation boundaries, and client primitives behind RabbitMQ messaging",
+  "02": "Explicit exchange and binding rules that route messages into queues without coupling publishers to consumers",
+  "03": "Knowing whether the broker accepted a message and preserving intent through failures and reconnects",
+  "04": "Controlling work, acknowledging only completed effects, and stopping consumers without losing messages",
+  "05": "Bounded redelivery, delayed retries, quarantine, expiration, and safe handling of permanently failing work",
+  "06": "Reusable messaging interactions and consistency patterns for workflows that cross service boundaries",
+  "07": "Selecting queue types and controlling memory, disk, throughput, ordering, and consumer concurrency",
+  "08": "Protecting, observing, clustering, restoring, and upgrading a production RabbitMQ deployment",
+  "09": "Combining reliability, compatibility, testing, performance, and recovery into an operable system",
 };
 
 const expandedName: Record<string, string> = {
@@ -219,9 +243,10 @@ export default function Home() {
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseSix = systemDesignLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : "07";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : companyBestPracticesLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : 600;
+    const inCourseSeven = companyBestPracticesLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : "08";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : rabbitMqLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : 700;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -247,9 +272,10 @@ export default function Home() {
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseSix = systemDesignLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : "07";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : companyBestPracticesLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : 600;
+    const inCourseSeven = companyBestPracticesLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : "08";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : rabbitMqLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : 700;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -270,9 +296,10 @@ export default function Home() {
   const figmaTopics = figmaLessons.flatMap((lesson) => lesson.topics);
   const systemDesignTopics = systemDesignLessons.flatMap((lesson) => lesson.topics);
   const companyBestPracticesTopics = companyBestPracticesLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : "07";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : companyBestPracticesTopics;
+  const rabbitMqTopics = rabbitMqLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics, ...rabbitMqTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : companyBestPracticesTopics.includes(activeTopic) ? "07" : "08";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : activeCourse === "07" ? companyBestPracticesTopics : rabbitMqTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -485,6 +512,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("08")} aria-expanded={openCourses.includes("08")}>
+            <span><small>Course 08</small><strong>RabbitMQ</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("08") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("08") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>RabbitMQ,<br />from message to production.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "08" ? Math.round(((courseTopicIndex + 1) / rabbitMqTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "08" ? courseTopicIndex + 1 : 0} / {rabbitMqTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "08" ? ((courseTopicIndex + 1) / rabbitMqTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && rabbitMqTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(rabbitMqLessons, 700, "Course 08 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -518,7 +569,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : companyBestPracticesLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : activeCourse === "07" ? companyBestPracticesLessonMeaning[activeLesson.number] : rabbitMqLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
