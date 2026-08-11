@@ -2,7 +2,14 @@
 .sidebar, .mobileSidebar { width: 330px; height: 100vh; position: fixed; inset: 0 auto 0 0; background: #18223c; color: #f7f8ff; padding: 28px 22px 20px; display: flex; flex-direction: column; z-index: 20; }
 .brand { display: flex; align-items: center; gap: 11px; padding: 0 8px; font-size: 18px; font-weight: 650; letter-spacing: -.03em; }
 .brandMark { width: 28px; height: 28px; display: grid; place-items: center; background: #a9c5ff; color: #18223c; border-radius: 4px; font-family: var(--font-display); font-weight: 900; }
-.courseStack { flex: 1; min-height: 0; margin-top: 42px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #475574 transparent; }
+.courseSearch { height: 40px; margin: 28px 0 0; padding: 0 10px; border: 1px solid #3b4968; border-radius: 6px; background: #121b31; display: flex; align-items: center; gap: 8px; color: #8491ad; transition: border-color .2s, background .2s; }
+.courseSearch:focus-within { border-color: #7898d8; background: #17233d; }
+.courseSearch input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: #f3f6ff; font: 11px var(--font-geist-sans); }
+.courseSearch input::placeholder { color: #7f8aa4; }
+.courseSearch input::-webkit-search-cancel-button { display: none; }
+.courseSearch button { border: 0; background: none; color: #aeb9d0; font-size: 17px; line-height: 1; cursor: pointer; }
+.courseStack { flex: 1; min-height: 0; margin-top: 16px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #475574 transparent; }
+.noCourseResults { padding: 22px 10px; color: #9da8bf; font-size: 11px; line-height: 1.5; }
 .courseGroup { border-top: 1px solid #34415f; }
 .courseGroup:last-child { border-bottom: 1px solid #34415f; }
 .courseHeader { width: 100%; min-height: 68px; padding: 0 8px; border: 0; background: none; color: inherit; display: flex; align-items: center; justify-content: space-between; text-align: left; cursor: pointer; }

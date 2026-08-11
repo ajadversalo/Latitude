@@ -103,7 +103,40 @@ const companyBestPracticesLessons: Lesson[] = [
   },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons];
+const graphqlLessons: Lesson[] = [
+  { number: "01", title: "GraphQL foundations", duration: "82 min", topics: ["GraphQL mental model", "SDL & schema anatomy", "Scalar, enum & custom types", "Object relationships", "Interfaces & unions", "Nullability & list semantics"] },
+  { number: "02", title: "Query language in depth", duration: "76 min", topics: ["Query documents & variables", "Aliases, fragments & directives", "Pagination with connections", "Input objects & validation"] },
+  { number: "03", title: "Mutations & workflows", duration: "68 min", topics: ["Mutation payload design", "Idempotency & concurrency"] },
+  { number: "04", title: "Server execution", duration: "92 min", topics: ["Resolver anatomy", "Context & dependency boundaries", "Solving N+1 with DataLoader", "Execution, parallelism & errors"] },
+  { number: "05", title: "Security & demand control", duration: "84 min", topics: ["Authentication & field policy", "Depth, breadth & cost limits", "Persisted & trusted operations", "Introspection & safe errors"] },
+  { number: "06", title: "Client architecture", duration: "78 min", topics: ["Client caching & normalization", "Fragments & colocation", "Optimistic UI & mutations", "Subscriptions & live updates"] },
+  { number: "07", title: "Evolution & federation", duration: "74 min", topics: ["Schema evolution & deprecation", "Schema registry & CI checks", "Federation fundamentals"] },
+  { number: "08", title: "Testing & production", duration: "72 min", topics: ["Testing GraphQL APIs", "Observability by operation", "Production rollout checklist"] },
+];
+
+const kubernetesLessons: Lesson[] = [
+  { number: "01", title: "Cluster foundations", duration: "84 min", topics: ["Kubernetes architecture", "API objects & desired state", "Namespaces, labels & annotations", "kubectl & declarative workflows"] },
+  { number: "02", title: "Workload controllers", duration: "96 min", topics: ["Pods & container lifecycle", "Deployments & ReplicaSets", "StatefulSets & identity", "DaemonSets, Jobs & CronJobs", "Init containers & sidecars"] },
+  { number: "03", title: "Networking & traffic", duration: "92 min", topics: ["Services & discovery", "Ingress & Gateway API", "Cluster networking & DNS", "NetworkPolicy"] },
+  { number: "04", title: "Configuration & storage", duration: "88 min", topics: ["ConfigMaps & configuration", "Secrets & external secret stores", "Volumes, PVs & PVCs", "Storage lifecycle & backups"] },
+  { number: "05", title: "Resources & scheduling", duration: "94 min", topics: ["Requests, limits & QoS", "Scheduling & placement", "Probes & graceful termination", "Autoscaling workloads", "Cluster capacity & disruption"] },
+  { number: "06", title: "Security & policy", duration: "86 min", topics: ["RBAC & service accounts", "Pod security & runtime hardening", "Supply-chain & admission policy"] },
+  { number: "07", title: "Delivery & packaging", duration: "72 min", topics: ["Helm & Kustomize", "GitOps & progressive delivery"] },
+  { number: "08", title: "Production operations", duration: "92 min", topics: ["Logs, metrics & traces", "Debugging failing workloads", "Upgrades, backup & disaster recovery"] },
+];
+
+const eventDrivenLessons: Lesson[] = [
+  { number: "01", title: "Event-driven foundations", duration: "86 min", topics: ["Event-driven design mental model", "Events, commands & messages", "Domain, integration & notification events", "Event storming & discovery", "Bounded contexts & ownership", "Choosing event-driven architecture"] },
+  { number: "02", title: "Event contract design", duration: "82 min", topics: ["Event envelope & metadata", "Schema design & evolution", "Event granularity & payloads", "Ordering, time & identity"] },
+  { number: "03", title: "Brokers & delivery", duration: "92 min", topics: ["Topics, queues & subscriptions", "Partitioning & consumer groups", "Delivery semantics", "Acknowledgement, retry & backoff", "Dead-letter & quarantine flows"] },
+  { number: "04", title: "Consistency patterns", duration: "88 min", topics: ["Idempotent consumers", "Transactional outbox", "Inbox & deduplication", "Change data capture", "Eventual consistency & UX"] },
+  { number: "05", title: "Distributed workflows", duration: "82 min", topics: ["Sagas & process managers", "Orchestration vs choreography"] },
+  { number: "06", title: "Event sourcing", duration: "90 min", topics: ["Event sourcing fundamentals", "Aggregates & optimistic concurrency", "Projections, snapshots & replay"] },
+  { number: "07", title: "Testing & observability", duration: "78 min", topics: ["Testing event-driven systems", "Observability & correlation", "Backpressure & load shedding"] },
+  { number: "08", title: "Production recovery", duration: "72 min", topics: ["Replay & incident recovery", "Event-driven production checklist"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons, ...graphqlLessons, ...kubernetesLessons, ...eventDrivenLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -162,6 +195,39 @@ const companyBestPracticesLessonMeaning: Record<string, string> = {
   "01": "Practical cloud governance, delivery planning, and implementation-ready front-end work for small and growing teams",
 };
 
+const graphqlLessonMeaning: Record<string, string> = {
+  "01": "The type system, graph model, and nullability guarantees behind every GraphQL API",
+  "02": "Writing safe, reusable operations and navigating large collections predictably",
+  "03": "Domain commands with typed outcomes, safe retries, and concurrency protection",
+  "04": "How fields execute, how dependencies are scoped, and how batching prevents N+1 work",
+  "05": "Layered authorization, bounded query cost, trusted documents, and controlled exposure",
+  "06": "Normalized caches, colocated data needs, responsive mutations, and realtime delivery",
+  "07": "Compatibility-driven schema change and graphs composed across domain teams",
+  "08": "Contract tests, operation-level telemetry, progressive delivery, and rollback readiness",
+};
+
+const kubernetesLessonMeaning: Record<string, string> = {
+  "01": "The API, control loops, object model, and declarative workflow behind a cluster",
+  "02": "Choosing controllers and Pod composition from the lifecycle and identity a workload needs",
+  "03": "Stable discovery, north-south routing, cluster data paths, DNS, and least-privilege connectivity",
+  "04": "Delivering configuration and secrets while selecting durable, recoverable storage",
+  "05": "Honest resource accounting, resilient placement, health, scaling, and planned disruption",
+  "06": "Least-privilege identities, hardened runtimes, trusted artifacts, and admission enforcement",
+  "07": "Reviewable packaging, continuously reconciled state, and evidence-driven rollouts",
+  "08": "Correlated telemetry, systematic diagnosis, safe upgrades, and verified recovery",
+};
+
+const eventDrivenLessonMeaning: Record<string, string> = {
+  "01": "Business facts, message intent, domain discovery, ownership, and the tradeoffs of asynchronous collaboration",
+  "02": "Durable event identities, useful payloads, compatible schemas, and explicit ordering guarantees",
+  "03": "Topology, partitioning, delivery, retries, and poison-message handling across brokered systems",
+  "04": "Closing dual-write gaps, making repeated delivery safe, and designing honest eventually consistent experiences",
+  "05": "Durable multi-service workflows with explicit coordination, timeouts, and compensation",
+  "06": "Event history as source of truth, aggregate concurrency, projections, snapshots, and controlled rebuilds",
+  "07": "Deterministic tests, end-to-end correlation, bounded consumers, and dependency-aware flow control",
+  "08": "Safe replay, incident recovery, and production readiness across the complete event lifecycle",
+};
+
 const expandedName: Record<string, string> = {
   DRY: "Don’t Repeat Yourself",
   KISS: "Keep It Simple, Stupid",
@@ -180,6 +246,7 @@ export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [openCourses, setOpenCourses] = useState<string[]>(["01"]);
+  const [courseFilter, setCourseFilter] = useState("");
   const [savedTopic, setSavedTopic] = useState<string | null>(null);
 
   useEffect(() => {
@@ -219,9 +286,12 @@ export default function Home() {
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseSix = systemDesignLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : "07";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : companyBestPracticesLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : 600;
+    const inCourseSeven = companyBestPracticesLessons.some((lesson) => lesson.topics.includes(topic));
+    const inCourseEight = graphqlLessons.some((lesson) => lesson.topics.includes(topic));
+    const inCourseNine = kubernetesLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : "10";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : eventDrivenLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : 900;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -247,9 +317,12 @@ export default function Home() {
     const inCourseFour = apiLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseFive = figmaLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseSix = systemDesignLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : "07";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : companyBestPracticesLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : 600;
+    const inCourseSeven = companyBestPracticesLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const inCourseEight = graphqlLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const inCourseNine = kubernetesLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : "10";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : eventDrivenLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : 900;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -270,9 +343,12 @@ export default function Home() {
   const figmaTopics = figmaLessons.flatMap((lesson) => lesson.topics);
   const systemDesignTopics = systemDesignLessons.flatMap((lesson) => lesson.topics);
   const companyBestPracticesTopics = companyBestPracticesLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : "07";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : companyBestPracticesTopics;
+  const graphqlTopics = graphqlLessons.flatMap((lesson) => lesson.topics);
+  const kubernetesTopics = kubernetesLessons.flatMap((lesson) => lesson.topics);
+  const eventDrivenTopics = eventDrivenLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics, ...graphqlTopics, ...kubernetesTopics, ...eventDrivenTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : companyBestPracticesTopics.includes(activeTopic) ? "07" : graphqlTopics.includes(activeTopic) ? "08" : kubernetesTopics.includes(activeTopic) ? "09" : "10";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : activeCourse === "07" ? companyBestPracticesTopics : activeCourse === "08" ? graphqlTopics : activeCourse === "09" ? kubernetesTopics : eventDrivenTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -284,6 +360,22 @@ export default function Home() {
     goodLabel: "Recommended structure",
     good: `${placement.path}\n\n// ${copy.takeaway}`,
   } : undefined);
+  const normalizedCourseFilter = courseFilter.trim().toLocaleLowerCase();
+  const courseMatches = (title: string, courseLessons: Lesson[]) =>
+    !normalizedCourseFilter || [title, ...courseLessons.flatMap((lesson) => [lesson.title, ...lesson.topics])]
+      .some((value) => value.toLocaleLowerCase().includes(normalizedCourseFilter));
+  const visibleCourseCount = [
+    ["Object-oriented design", lessons],
+    ["Authentication", authLessons],
+    ["ASP.NET Core Web API", dotnetLessons],
+    ["GraphQL & REST APIs", apiLessons],
+    ["Figma", figmaLessons],
+    ["System Design", systemDesignLessons],
+    ["Small to medium company best practices", companyBestPracticesLessons],
+    ["GraphQL in depth", graphqlLessons],
+    ["Kubernetes in depth", kubernetesLessons],
+    ["Event-Driven Design", eventDrivenLessons],
+  ].filter(([title, courseLessons]) => courseMatches(title as string, courseLessons as Lesson[])).length;
 
   const renderLessons = (courseLessons: Lesson[], offset: number, label: string) => (
     <nav className={styles.lessonNav} aria-label={label}>
@@ -316,8 +408,20 @@ export default function Home() {
         <span className={styles.brandMark}>L</span>
         <span>Latitude</span>
       </div>
+      <div className={styles.courseSearch}>
+        <span aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          value={courseFilter}
+          onChange={(event) => setCourseFilter(event.target.value)}
+          placeholder="Find a course or topic"
+          aria-label="Filter courses by title, lesson, or topic"
+        />
+        {courseFilter && <button onClick={() => setCourseFilter("")} aria-label="Clear course filter">×</button>}
+      </div>
       <div className={styles.courseStack}>
-        <section className={styles.courseGroup}>
+        {visibleCourseCount === 0 && <p className={styles.noCourseResults}>No courses match “{courseFilter.trim()}”.</p>}
+        <section className={styles.courseGroup} hidden={!courseMatches("Object-oriented design", lessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("01")} aria-expanded={openCourses.includes("01")}>
             <span><small>Course 01</small><strong>Object-oriented design</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("01") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -341,7 +445,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("Authentication", authLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("02")} aria-expanded={openCourses.includes("02")}>
             <span><small>Course 02</small><strong>Authentication</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("02") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -365,7 +469,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("ASP.NET Core Web API", dotnetLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("03")} aria-expanded={openCourses.includes("03")}>
             <span><small>Course 03</small><strong>ASP.NET Core Web API</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("03") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -389,7 +493,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("GraphQL & REST APIs", apiLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("04")} aria-expanded={openCourses.includes("04")}>
             <span><small>Course 04</small><strong>GraphQL & REST APIs</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("04") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -413,7 +517,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("Figma", figmaLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("05")} aria-expanded={openCourses.includes("05")}>
             <span><small>Course 05</small><strong>Figma</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("05") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -437,7 +541,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("System Design", systemDesignLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("06")} aria-expanded={openCourses.includes("06")}>
             <span><small>Course 06</small><strong>System Design</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("06") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -461,7 +565,7 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup}>
+        <section className={styles.courseGroup} hidden={!courseMatches("Small to medium company best practices", companyBestPracticesLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("07")} aria-expanded={openCourses.includes("07")}>
             <span><small>Course 07</small><strong>Small to medium company best practices</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("07") ? styles.courseChevronOpen : ""}`}>⌄</span>
@@ -482,6 +586,78 @@ export default function Home() {
                 )}
               </div>
               {renderLessons(companyBestPracticesLessons, 600, "Course 07 lessons")}
+            </div>
+          </div>
+        </section>
+        <section className={styles.courseGroup} hidden={!courseMatches("GraphQL in depth", graphqlLessons)}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("08")} aria-expanded={openCourses.includes("08")}>
+            <span><small>Course 08</small><strong>GraphQL in depth</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("08") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("08") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>GraphQL,<br />from schema to production.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "08" ? Math.round(((courseTopicIndex + 1) / graphqlTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "08" ? courseTopicIndex + 1 : 0} / {graphqlTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "08" ? ((courseTopicIndex + 1) / graphqlTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && graphqlTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(graphqlLessons, 700, "Course 08 lessons")}
+            </div>
+          </div>
+        </section>
+        <section className={styles.courseGroup} hidden={!courseMatches("Kubernetes in depth", kubernetesLessons)}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("09")} aria-expanded={openCourses.includes("09")}>
+            <span><small>Course 09</small><strong>Kubernetes in depth</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("09") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("09") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>Kubernetes,<br />from cluster to production.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "09" ? Math.round(((courseTopicIndex + 1) / kubernetesTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "09" ? courseTopicIndex + 1 : 0} / {kubernetesTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "09" ? ((courseTopicIndex + 1) / kubernetesTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && kubernetesTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(kubernetesLessons, 800, "Course 09 lessons")}
+            </div>
+          </div>
+        </section>
+        <section className={styles.courseGroup} hidden={!courseMatches("Event-Driven Design", eventDrivenLessons)}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("10")} aria-expanded={openCourses.includes("10")}>
+            <span><small>Course 10</small><strong>Event-Driven Design</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("10") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("10") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>Event-driven design,<br />from domain facts to production.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "10" ? Math.round(((courseTopicIndex + 1) / eventDrivenTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "10" ? courseTopicIndex + 1 : 0} / {eventDrivenTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "10" ? ((courseTopicIndex + 1) / eventDrivenTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && eventDrivenTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(eventDrivenLessons, 900, "Course 10 lessons")}
             </div>
           </div>
         </section>
@@ -518,7 +694,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : companyBestPracticesLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : activeCourse === "07" ? companyBestPracticesLessonMeaning[activeLesson.number] : activeCourse === "08" ? graphqlLessonMeaning[activeLesson.number] : activeCourse === "09" ? kubernetesLessonMeaning[activeLesson.number] : eventDrivenLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
