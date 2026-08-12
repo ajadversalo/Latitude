@@ -126,14 +126,16 @@ const kubernetesLessons: Lesson[] = [
 ];
 
 const eventDrivenLessons: Lesson[] = [
-  { number: "01", title: "Event-driven foundations", duration: "86 min", topics: ["Event-driven design mental model", "Events, commands & messages", "Domain, integration & notification events", "Event storming & discovery", "Bounded contexts & ownership", "Choosing event-driven architecture"] },
-  { number: "02", title: "Event contract design", duration: "82 min", topics: ["Event envelope & metadata", "Schema design & evolution", "Event granularity & payloads", "Ordering, time & identity"] },
-  { number: "03", title: "Brokers & delivery", duration: "92 min", topics: ["Topics, queues & subscriptions", "Partitioning & consumer groups", "Delivery semantics", "Acknowledgement, retry & backoff", "Dead-letter & quarantine flows"] },
-  { number: "04", title: "Consistency patterns", duration: "88 min", topics: ["Idempotent consumers", "Transactional outbox", "Inbox & deduplication", "Change data capture", "Eventual consistency & UX"] },
-  { number: "05", title: "Distributed workflows", duration: "82 min", topics: ["Sagas & process managers", "Orchestration vs choreography"] },
-  { number: "06", title: "Event sourcing", duration: "90 min", topics: ["Event sourcing fundamentals", "Aggregates & optimistic concurrency", "Projections, snapshots & replay"] },
-  { number: "07", title: "Testing & observability", duration: "78 min", topics: ["Testing event-driven systems", "Observability & correlation", "Backpressure & load shedding"] },
-  { number: "08", title: "Production recovery", duration: "72 min", topics: ["Replay & incident recovery", "Event-driven production checklist"] },
+  { number: "01", title: "EDD foundations", duration: "24 min", topics: ["What is Event-Driven Development?", "Core concepts"] },
+  { number: "02", title: "Architecture comparison", duration: "18 min", topics: ["Request-driven vs event-driven"] },
+  { number: "03", title: "Build an event-driven system", duration: "42 min", topics: ["Create the event bus", "Emit an event from the producer", "React with independent consumers", "Run the application"] },
+  { number: "04", title: "Key design patterns", duration: "24 min", topics: ["Publish-subscribe", "Event sourcing", "CQRS"] },
+  { number: "05", title: "Benefits & trade-offs", duration: "20 min", topics: ["EDD advantages and challenges"] },
+  { number: "06", title: "RabbitMQ foundations", duration: "32 min", topics: ["RabbitMQ broker model", "RabbitMQ exchange types"] },
+  { number: "07", title: "Reliable RabbitMQ delivery", duration: "38 min", topics: ["RabbitMQ acknowledgements and flow control", "RabbitMQ dead letters and quorum queues", "Publish with amqplib", "Consume with amqplib"] },
+  { number: "08", title: "Azure Service Bus foundations", duration: "32 min", topics: ["Azure Service Bus broker model", "Queues, topics and subscriptions", "Service Bus enterprise features"] },
+  { number: "09", title: "Build with Azure Service Bus", duration: "36 min", topics: ["Publish to a Service Bus topic", "Consume a Service Bus subscription"] },
+  { number: "10", title: "Choose a production broker", duration: "18 min", topics: ["RabbitMQ vs Azure Service Bus"] },
 ];
 
 const rabbitMqLessons: Lesson[] = [
@@ -230,14 +232,16 @@ const kubernetesLessonMeaning: Record<string, string> = {
 };
 
 const eventDrivenLessonMeaning: Record<string, string> = {
-  "01": "Business facts, message intent, domain discovery, ownership, and the tradeoffs of asynchronous collaboration",
-  "02": "Durable event identities, useful payloads, compatible schemas, and explicit ordering guarantees",
-  "03": "Topology, partitioning, delivery, retries, and poison-message handling across brokered systems",
-  "04": "Closing dual-write gaps, making repeated delivery safe, and designing honest eventually consistent experiences",
-  "05": "Durable multi-service workflows with explicit coordination, timeouts, and compensation",
-  "06": "Event history as source of truth, aggregate concurrency, projections, snapshots, and controlled rebuilds",
-  "07": "Deterministic tests, end-to-end correlation, bounded consumers, and dependency-aware flow control",
-  "08": "Safe replay, incident recovery, and production readiness across the complete event lifecycle",
+  "01": "Events, producers, consumers, and brokers—the small set of ideas behind event-driven systems",
+  "02": "How asynchronous events reduce direct dependencies between services",
+  "03": "A complete Node.js example built from a local event bus, one producer, and three consumers",
+  "04": "Publish-subscribe, event sourcing, and CQRS as distinct ways to use events",
+  "05": "The scalability and resilience gains of EDD, balanced against consistency and operational complexity",
+  "06": "How RabbitMQ routes publisher messages through exchanges, bindings, routing keys, and queues",
+  "07": "Acknowledgements, flow control, dead letters, replicated queues, and a working Node.js topic-routing example",
+  "08": "Microsoft’s managed broker model, from namespaces and queues to filtered topic subscriptions",
+  "09": "Publishing and manually settling messages with Azure.Messaging.ServiceBus in .NET",
+  "10": "Choosing between configurable broker topology and a fully managed enterprise messaging service",
 };
 
 const rabbitMqLessonMeaning: Record<string, string> = {
@@ -401,7 +405,7 @@ export default function Home() {
     ["Small to medium company best practices", companyBestPracticesLessons],
     ["GraphQL in depth", graphqlLessons],
     ["Kubernetes in depth", kubernetesLessons],
-    ["Event-Driven Design", eventDrivenLessons],
+    ["Event-Driven Development", eventDrivenLessons],
     ["RabbitMQ", rabbitMqLessons],
   ].filter(([title, courseLessons]) => courseMatches(title as string, courseLessons as Lesson[])).length;
 
@@ -665,15 +669,15 @@ export default function Home() {
             </div>
           </div>
         </section>
-        <section className={styles.courseGroup} hidden={!courseMatches("Event-Driven Design", eventDrivenLessons)}>
+        <section className={styles.courseGroup} hidden={!courseMatches("Event-Driven Development", eventDrivenLessons)}>
           <button className={styles.courseHeader} onClick={() => toggleCourse("10")} aria-expanded={openCourses.includes("10")}>
-            <span><small>Course 10</small><strong>Event-Driven Design</strong></span>
+            <span><small>Course 10</small><strong>Event-Driven Development</strong></span>
             <span className={`${styles.courseChevron} ${openCourses.includes("10") ? styles.courseChevronOpen : ""}`}>⌄</span>
           </button>
           <div className={`${styles.courseBody} ${openCourses.includes("10") ? styles.courseBodyOpen : ""}`}>
             <div className={styles.courseBodyInner}>
               <div className={styles.courseMeta}>
-                <h2>Event-driven design,<br />from domain facts to production.</h2>
+                <h2>Event-driven development,<br />from first event to working system.</h2>
                 <div className={styles.progressRow}>
                   <span>{activeCourse === "10" ? Math.round(((courseTopicIndex + 1) / eventDrivenTopics.length) * 100) : 0}% complete</span>
                   <span>{activeCourse === "10" ? courseTopicIndex + 1 : 0} / {eventDrivenTopics.length}</span>

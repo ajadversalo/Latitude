@@ -904,6 +904,159 @@ response.clearCookie("__Host-session")
 // Never log passwords, raw tokens, codes, or session IDs.`),
 });
 
+// Course 10 extension: production brokers
+Object.assign(topicCopy, {
+  "RabbitMQ broker model": authContent(
+    "RabbitMQ is an open-source, highly configurable message broker written in Erlang. It supports AMQP 0-9-1, STOMP, and MQTT, and decouples publishers from queues through an explicit routing layer.",
+    "A publisher sends a message to an exchange—not directly to a queue. The exchange evaluates the routing key against bindings, routes the message into one or more queues, and consumers process messages from those queues.",
+    "Think in two stages: exchanges route messages; queues retain them for consumers."
+  ),
+  "RabbitMQ exchange types": authContent(
+    "RabbitMQ offers four main exchange types. Direct exchanges match an exact binding key, fanout exchanges broadcast to every bound queue, topic exchanges match dot-separated routing keys with wildcards, and headers exchanges route using message metadata.",
+    "For app.europe.orders.created, a topic binding of app.europe.# matches every European event, while *.orders.* matches a three-segment order key from any application or region. The * wildcard matches one segment; # matches zero or more.",
+    "Choose exchange type from the routing behavior: exact, broadcast, wildcard, or metadata-driven."
+  ),
+  "RabbitMQ acknowledgements and flow control": authContent(
+    "A consumer acknowledges a message only after successful processing. If it disconnects before acknowledging, RabbitMQ can requeue the unacknowledged delivery for another consumer.",
+    "Prefetch limits how many unacknowledged messages a consumer may hold. A prefetch of 1 gives a worker one message at a time; larger values can improve throughput when the handler and its dependencies have measured capacity.",
+    "Acknowledge completed work and set prefetch from real consumer capacity, not guesswork."
+  ),
+  "RabbitMQ dead letters and quorum queues": authContent(
+    "A dead-letter exchange receives messages rejected without requeue, expired by a TTL, or removed because a queue exceeded its length limit. This separates poison or expired work from the healthy delivery path for inspection and recovery.",
+    "Quorum queues replicate data across RabbitMQ nodes using the Raft consensus algorithm. They are the modern choice when replicated, highly available queue data is required, but still need deliberate sizing and failure planning.",
+    "Quarantine terminal failures explicitly and use quorum queues when message safety must survive node loss."
+  ),
+  "Publish with amqplib": authContent(
+    "The Node.js amqplib client connects to RabbitMQ, opens a channel, declares a durable topic exchange, and publishes a Buffer with a routing key. Declaring topology makes the example repeatable across application starts.",
+    "Publish a JSON user signup event to app_events with the key user.europe.signup. The exchange can route the same publication to every queue whose topic binding matches that key.",
+    "Publish to the exchange with an intentional routing key; keep queue knowledge out of the publisher."
+  ),
+  "Consume with amqplib": authContent(
+    "The consumer declares the same exchange, creates a durable queue, and binds it with user.europe.*. It sets prefetch to 1, parses each delivery, performs its work, and acknowledges only after success.",
+    "The binding matches one final segment after user.europe, including user.europe.signup. Manual acknowledgement preserves the message if the worker dies before processing completes.",
+    "Bind for the events the worker owns and acknowledge only after its effect succeeds."
+  ),
+  "Azure Service Bus broker model": authContent(
+    "Azure Service Bus is Microsoft’s fully managed enterprise message broker. Azure operates the infrastructure, clustering, and persistence, while applications work with messaging entities inside a namespace.",
+    "It supports AMQP 1.0, HTTPS, and JMS 2.0 and is designed for durable enterprise integration, ordered workflows, and cloud-native operation without self-managing broker nodes.",
+    "Choose a managed broker when reducing infrastructure ownership matters more than controlling the broker topology yourself."
+  ),
+  "Queues, topics and subscriptions": authContent(
+    "A Service Bus queue provides point-to-point delivery: competing receivers share the work and one receiver settles each message. A topic provides publish-subscribe delivery through one or more durable subscriptions.",
+    "Each subscription behaves like a durable virtual queue and may apply SQL-like filters to application properties. An EMEA subscription can accept only messages whose Region property equals EMEA.",
+    "Use queues to distribute work once; use topic subscriptions to create independent, filtered copies."
+  ),
+  "Service Bus enterprise features": authContent(
+    "PeekLock gives a receiver a temporary server-side lock and explicit outcomes: complete removes the message, abandon releases it, and deadLetter moves it to the entity’s built-in dead-letter sub-queue.",
+    "Sessions group messages by SessionId for ordered processing within that group. Duplicate detection suppresses repeated MessageId values within a configured window, while auto-forwarding chains entities inside a namespace.",
+    "Match settlement, ordering, deduplication, and forwarding features to explicit workflow guarantees."
+  ),
+  "Publish to a Service Bus topic": authContent(
+    "Azure.Messaging.ServiceBus uses ServiceBusClient to create a sender for a topic. A ServiceBusMessage carries the body plus broker metadata such as ContentType, MessageId, and SessionId.",
+    "Publish an order with Region and OrderTotal application properties. Subscriptions can filter on those properties, MessageId supports configured duplicate detection, and SessionId groups ordered work for one customer.",
+    "Give every message stable identity, useful routing metadata, and an ordering key only where ordered processing is required."
+  ),
+  "Consume a Service Bus subscription": authContent(
+    "ServiceBusProcessor manages background receives, lock renewal, and handler concurrency. With AutoCompleteMessages disabled, the handler explicitly completes a successfully processed message.",
+    "Create a processor for orders-topic and emea-processing-sub, cap MaxConcurrentCalls, attach message and error handlers, then start and stop processing through the client lifecycle.",
+    "Use manual settlement when completion must mean the consumer’s work actually succeeded."
+  ),
+  "RabbitMQ vs Azure Service Bus": authContent(
+    "RabbitMQ can be self-hosted, containerized, or purchased as a managed service and excels at configurable exchange-and-binding topology. Azure Service Bus is a fully managed Azure service with queues, filtered topic subscriptions, sessions, native dead-letter sub-queues, and duplicate detection.",
+    "RabbitMQ fits on-premises or hybrid environments and teams needing flexible routing and broker control. Service Bus fits Azure-centered enterprise integration and workflows that benefit from managed operations, session ordering, and built-in broker features.",
+    "Choose from operational constraints and delivery guarantees—not from feature count alone."
+  ),
+});
+
+Object.assign(codeExamples, {
+  "RabbitMQ broker model": authExample("Route through an exchange", "Publisher coupled to a queue", `Publisher ─────────────> Queue ──> Consumer`, "RabbitMQ message path", `Publisher ──> Exchange ──[binding + routing key]──> Queue ──> Consumer`),
+  "RabbitMQ exchange types": authExample("Match exchange type to intent", "One routing rule for every use case", `exchange = "topic"\n// even when every queue should receive the message`, "Four routing behaviors", `direct   → exact binding-key match\nfanout   → every bound queue\ntopic    → wildcard routing-key match\nheaders  → message-header match\n\n* matches one word\n# matches zero or more words`),
+  "RabbitMQ acknowledgements and flow control": authExample("Bound in-flight work", "Acknowledge before processing", `channel.ack(msg)\nawait handle(msg) // failure loses the work`, "Complete, then acknowledge", `channel.prefetch(1)\n\nchannel.consume(queue, async msg => {\n  try {\n    await handle(msg)\n    channel.ack(msg)\n  } catch {\n    channel.nack(msg, false, true)\n  }\n})`),
+  "RabbitMQ dead letters and quorum queues": authExample("Separate terminal failure from retry", "Requeue poison messages forever", `channel.nack(msg, false, true)\n// same permanent failure repeats`, "Dead-letter terminal failures", `await channel.assertQueue("orders", {\n  durable: true,\n  arguments: {\n    "x-queue-type": "quorum",\n    "x-dead-letter-exchange": "orders.dlx"\n  }\n})\n\nchannel.nack(msg, false, false)`),
+  "Publish with amqplib": authExample("Publish a topic-routed event", "Publisher targets a consumer queue", `channel.sendToQueue("european_user_events", body)`, "publisher.js", `const amqp = require("amqplib")\n\nasync function publish() {\n  const connection = await amqp.connect("amqp://localhost")\n  const channel = await connection.createChannel()\n  const exchange = "app_events"\n  const routingKey = "user.europe.signup"\n  const message = JSON.stringify({\n    userId: 42, email: "user@domain.com"\n  })\n\n  await channel.assertExchange(exchange, "topic", { durable: true })\n  channel.publish(exchange, routingKey, Buffer.from(message))\n\n  await channel.close()\n  await connection.close()\n}\n\npublish()`),
+  "Consume with amqplib": authExample("Bind, limit, process, acknowledge", "Consume without flow control", `channel.consume(queue, msg => handle(msg), { noAck: true })`, "consumer.js", `const amqp = require("amqplib")\n\nasync function consume() {\n  const connection = await amqp.connect("amqp://localhost")\n  const channel = await connection.createChannel()\n  const exchange = "app_events"\n  const q = await channel.assertQueue("european_user_events", { durable: true })\n\n  await channel.assertExchange(exchange, "topic", { durable: true })\n  await channel.bindQueue(q.queue, exchange, "user.europe.*")\n  channel.prefetch(1)\n\n  channel.consume(q.queue, msg => {\n    if (!msg) return\n    const content = JSON.parse(msg.content.toString())\n    console.log(msg.fields.routingKey, content)\n    channel.ack(msg)\n  })\n}\n\nconsume()`),
+  "Azure Service Bus broker model": authExample("Work inside a managed namespace", "Self-managed cluster", `Applications → broker nodes\n               ├─ patching\n               ├─ clustering\n               └─ persistence operations`, "Managed Service Bus", `Azure Service Bus Namespace\n├── Queue → competing receivers\n└── Topic\n    ├── Subscription A → Receiver A\n    └── Subscription B → Receiver B`),
+  "Queues, topics and subscriptions": authExample("Choose the delivery shape", "Treat queue and topic as synonyms", `Sender → entity → every receiver?\n// Delivery ownership is ambiguous.`, "Two explicit patterns", `Point-to-point:\nSender → Queue → one competing receiver\n\nPublish-subscribe:\nSender → Topic ┬→ Subscription A → Receiver A\n               └→ Subscription B → Receiver B`),
+  "Service Bus enterprise features": authExample("Settle each outcome deliberately", "Delete on receive", `receive(message)\n// A crash after receive loses the work.`, "PeekLock outcomes", `success          → complete(message)\ntransient failure → abandon(message)\nterminal failure  → deadLetter(message)\n\nSessionId → ordered processing per group\nMessageId → duplicate-detection identity`),
+  "Publish to a Service Bus topic": authExample("Publish identity and filter metadata", "Body-only message", `await sender.SendMessageAsync(\n    new ServiceBusMessage(orderJson));`, "C# publisher", `await using var client = new ServiceBusClient(connectionString);\nServiceBusSender sender = client.CreateSender("orders-topic");\n\nvar message = new ServiceBusMessage(orderData)\n{\n    ContentType = "application/json",\n    MessageId = "ORD-1024",\n    SessionId = "Customer-55"\n};\nmessage.ApplicationProperties.Add("Region", "EMEA");\nmessage.ApplicationProperties.Add("OrderTotal", 450.00);\n\nawait sender.SendMessageAsync(message);`),
+  "Consume a Service Bus subscription": authExample("Process and settle manually", "Assume receipt means success", `AutoCompleteMessages = true\n// Completion is disconnected from explicit handler intent.`, "C# subscription processor", `await using var client = new ServiceBusClient(connectionString);\nvar processor = client.CreateProcessor(\n    "orders-topic", "emea-processing-sub",\n    new ServiceBusProcessorOptions\n    {\n        MaxConcurrentCalls = 2,\n        AutoCompleteMessages = false\n    });\n\nprocessor.ProcessMessageAsync += async args =>\n{\n    Console.WriteLine(args.Message.Body.ToString());\n    await args.CompleteMessageAsync(args.Message);\n};\nprocessor.ProcessErrorAsync += args =>\n{\n    Console.WriteLine(args.Exception.Message);\n    return Task.CompletedTask;\n};\n\nawait processor.StartProcessingAsync();`),
+  "RabbitMQ vs Azure Service Bus": authExample("Compare the operating models", "Choose by brand familiarity", `RabbitMQ or Service Bus?\n// No workload or operational criteria`, "Decision guide", `RabbitMQ\n• Self-hosted, containerized, or managed\n• Exchanges + bindings\n• Flexible topological routing\n• Consumer-side deduplication by default\n\nAzure Service Bus\n• Fully managed Azure service\n• Queues + filtered topic subscriptions\n• Session-based ordered groups\n• Native DLQ and duplicate detection`),
+});
+
+// Course 10: Event-Driven Development
+// This concise course follows the supplied EDD introduction and hands-on Node.js example.
+Object.assign(topicCopy, {
+  "What is Event-Driven Development?": authContent(
+    "Event-Driven Development (EDD), also called Event-Driven Architecture (EDA), is an approach where services and components communicate by publishing and responding to events. Instead of calling another service and waiting, a producer announces that something happened and interested consumers react independently.",
+    "An Order Service can publish OrderCreated after saving an order. Payment, inventory, notification, and analytics services can each listen for that fact without the Order Service directing their work.",
+    "Publish a past-tense fact about what happened; let independently owned consumers decide how to react."
+  ),
+  "Core concepts": authContent(
+    "An event is an immutable record of a state change, such as OrderPlaced, UserRegistered, or PaymentFailed. A producer publishes the event, consumers subscribe and react, and an event router or broker transports it between them.",
+    "In production, Apache Kafka, RabbitMQ, AWS EventBridge, or Redis Pub/Sub can play the broker role. The right choice depends on durability, routing, ordering, throughput, and delivery requirements.",
+    "Keep the roles clear: producers report facts, brokers transport them, and consumers own their reactions."
+  ),
+  "Request-driven vs event-driven": authContent(
+    "A request-driven workflow makes the Order Service call Payment, Inventory, and Notification directly. That creates a synchronous chain: one slow or unavailable dependency can delay or fail the entire request, and adding another reaction requires changing the coordinator.",
+    "In the event-driven version, the Order Service saves the order and publishes OrderPlaced to a broker. Payment, Inventory, and Notification subscribe independently; a durable broker can retain work while a consumer is unavailable.",
+    "Use events when reactions can happen independently and asynchronously; keep direct requests when the caller needs an immediate result."
+  ),
+  "Create the event bus": authContent(
+    "The event bus connects publishers and subscribers. This course uses Node.js EventEmitter to make the pattern visible without infrastructure; it is an in-memory teaching model, not a durable production broker.",
+    "Create one shared EventBus instance in eventBus.js and export it. Every service imports the same instance so emitted events reach all listeners registered in the running process.",
+    "Start locally with a tiny abstraction, then choose a production broker when you need persistence, retries, scaling, or cross-process delivery."
+  ),
+  "Emit an event from the producer": authContent(
+    "The producer performs its owned work first, then emits a past-tense event. The Order Service saves the order and publishes OrderCreated with the information consumers need, without importing or calling any consumer.",
+    "Include a stable order id, customer email, items, total, and timestamp. In a real system, persist the business change and publication intent atomically so a crash cannot save the order but lose its event.",
+    "A producer should know the fact it publishes, not the list of services that happen to consume it."
+  ),
+  "React with independent consumers": authContent(
+    "Each consumer registers its own handler for OrderCreated and performs one focused reaction. Inventory reserves stock, Notification sends a confirmation, and Analytics records revenue.",
+    "A new Analytics consumer can be added without editing the Order Service. With a production broker, consumers can also have independent scaling, retry, and failure policies.",
+    "Add behavior by subscribing a consumer, not by expanding the producer into a workflow coordinator."
+  ),
+  "Run the application": authContent(
+    "The entry point loads each consumer so its listener is registered, imports createOrder, and submits a sample order. The resulting output makes the fan-out visible: one saved order triggers three independent reactions.",
+    "Because EventEmitter invokes local listeners in the same process, this demonstration runs immediately and synchronously. Kafka, RabbitMQ, or EventBridge would make transport asynchronous and can provide durable delivery.",
+    "Use the local demo to learn message flow, but do not mistake an in-memory emitter for a resilient message broker."
+  ),
+  "Publish-subscribe": authContent(
+    "Publish-subscribe delivers one event to multiple interested subscribers. The publisher does not address those consumers directly, so another subscriber can join without changing publisher code.",
+    "OrderCreated can fan out to Inventory, Notification, and Analytics. Each subscriber owns a different outcome while sharing the same source event.",
+    "Use publish-subscribe for independent reactions to the same fact."
+  ),
+  "Event sourcing": authContent(
+    "Event sourcing stores the sequence of events that changed an entity instead of storing only its latest state. AccountOpened, MoneyDeposited, and MoneyWithdrawn can be replayed to reconstruct an account balance at any point in time.",
+    "The event history becomes the source of truth, while current views are derived from it. This adds auditability and temporal insight, but also introduces schema evolution, replay, and storage complexity.",
+    "Choose event sourcing when the history itself has business value—not merely because the system publishes events."
+  ),
+  "CQRS": authContent(
+    "Command Query Responsibility Segregation separates the model used to change state from the model used to read it. Writes can publish events that asynchronously update read-optimized views.",
+    "A checkout command writes to the order model and emits OrderCreated. A consumer projects that event into a fast customer order-history view tailored to queries.",
+    "Use CQRS when read and write needs genuinely differ enough to justify separate models and eventual consistency."
+  ),
+  "EDD advantages and challenges": authContent(
+    "EDD improves loose coupling, availability, and scalability: publishers do not need to know every consumer, failed consumers can recover from durable queues, and consumer pools can distribute heavy workloads.",
+    "Those gains introduce eventual consistency, more difficult cross-service debugging, and possible duplicate delivery. Production systems need correlation and distributed tracing, clear pending states, and idempotent consumers that safely handle the same event more than once.",
+    "Adopt EDD for the independence and resilience it provides, while budgeting explicitly for observability, consistency, and duplicate handling."
+  ),
+});
+
+Object.assign(codeExamples, {
+  "What is Event-Driven Development?": authExample("Announce what happened", "Direct synchronous coordination", `await payment.charge(order)\nawait inventory.reserve(order)\nawait notification.send(order)`, "Publish one business event", `await orders.save(order)\n\neventBus.emit("OrderCreated", {\n  orderId: order.id,\n  items: order.items,\n  total: order.total\n})`),
+  "Core concepts": authExample("See the four roles in one flow", "Request chain", `Producer ──calls──> Service B\n         ──calls──> Service C`, "Event flow", `Producer ──publishes──> Broker\n                         ├──> Consumer A\n                         ├──> Consumer B\n                         └──> Consumer C`),
+  "Request-driven vs event-driven": authExample("Remove downstream services from the order request", "Tightly coupled", `Client → Order Service → Payment\n                     → Inventory\n                     → Notification\n\nOne slow dependency delays the request.`, "Loosely coupled", `Client → Order Service\n              │ publishes OrderPlaced\n              ▼\n         Event Broker\n        ╱      │       ╲\n Payment  Inventory  Notification`),
+  "Create the event bus": authExample("Model a broker locally", "Production broker—later", `Kafka / RabbitMQ / EventBridge\n\nDurable, cross-process, operational infrastructure`, "eventBus.js", `const EventEmitter = require("events")\n\nclass EventBus extends EventEmitter {}\n\nconst globalEventBus = new EventBus()\nmodule.exports = globalEventBus`),
+  "Emit an event from the producer": authExample("Save the order, then publish the fact", "Producer calls its consumers", `await inventory.reserve(order)\nawait notification.send(order)`, "orderService.js", `const eventBus = require("./eventBus")\n\nfunction createOrder(orderData) {\n  const order = {\n    id: "ORD-101",\n    ...orderData,\n    status: "CREATED"\n  }\n\n  console.log(\`[Order Service] Order \${order.id} saved to DB.\`)\n\n  eventBus.emit("OrderCreated", {\n    orderId: order.id,\n    userEmail: order.userEmail,\n    items: order.items,\n    total: order.total,\n    timestamp: new Date().toISOString()\n  })\n}\n\nmodule.exports = { createOrder }`),
+  "React with independent consumers": authExample("Subscribe without changing the producer", "One growing coordinator", `createOrder() {\n  reserveInventory()\n  sendNotification()\n  trackAnalytics()\n}`, "Three focused subscribers", `// inventoryService.js\neventBus.on("OrderCreated", event => {\n  console.log("[Inventory Service] Reserving:", event.items)\n})\n\n// notificationService.js\neventBus.on("OrderCreated", event => {\n  console.log(\`[Notification Service] Emailing \${event.userEmail}\`)\n})\n\n// analyticsService.js\neventBus.on("OrderCreated", event => {\n  console.log(\`[Analytics Service] Revenue: +$\${event.total}\`)\n})`),
+  "Run the application": authExample("Register listeners before emitting", "No consumers loaded", `const { createOrder } = require("./orderService")\ncreateOrder(order)\n// No listeners have been registered.`, "app.js", `require("./inventoryService")\nrequire("./notificationService")\nrequire("./analyticsService")\n\nconst { createOrder } = require("./orderService")\n\ncreateOrder({\n  userEmail: "alex@example.com",\n  items: ["Laptop", "Mouse"],\n  total: 1250\n})`),
+  "Publish-subscribe": authExample("Fan out one fact", "Publisher names every destination", `publishToInventory(event)\npublishToNotification(event)\npublishToAnalytics(event)`, "Subscribers opt in", `eventBus.emit("OrderCreated", event)\n\n// Any number of services can subscribe:\neventBus.on("OrderCreated", handleInventory)\neventBus.on("OrderCreated", sendConfirmation)\neventBus.on("OrderCreated", trackRevenue)`),
+  "Event sourcing": authExample("Preserve the history of change", "Store only current state", `{ accountId: "A-17", balance: 125 }`, "Store and replay events", `AccountOpened   { balance: 0 }\nMoneyDeposited  { amount: 150 }\nMoneyWithdrawn  { amount: 25 }\n\ncurrent balance = replay(events) // 125`),
+  "CQRS": authExample("Separate change and read models", "One model serves every need", `orders.writeAndReadModel\n// Transaction rules and dashboard queries compete.`, "Purpose-built sides", `Command → Order write model\n               │ emits events\n               ▼\n         Read-model projector\n               │\nQuery ─────────> Customer order view`),
+  "EDD advantages and challenges": authExample("Pair each benefit with its responsibility", "Benefits only", `✓ Loose coupling\n✓ High availability\n✓ Scalability`, "Operationally complete view", `ADVANTAGES          RESPONSIBILITIES\nLoose coupling   →  Trace event flows\nAvailability     →  Design for eventual consistency\nScalability      →  Make consumers idempotent\nRecovery         →  Monitor queues and consumer lag`),
+});
+
 Object.assign(topicCopy, {
   "Event-driven design mental model": authContent("Event-driven design models meaningful facts as immutable events and lets independently owned consumers react asynchronously. Producers publish what happened without directing every downstream action.", "After an order is placed, publish OrderPlaced with stable identity and business context. Inventory, fulfillment, analytics, and notifications consume it independently under their own retry and failure policies.", "Publish durable business facts and let consumers own their reactions; do not disguise remote commands as events."),
   "Events, commands & messages": authContent("A command asks a specific owner to perform an action, an event states that something already happened, and message is the transport-neutral umbrella term. Their names, routing, and failure semantics should reflect those differences.", "Send ReserveInventory to the inventory capability; publish InventoryReserved only after the state change commits. Name events in past tense and commands with imperative intent.", "Make intent explicit: commands may be rejected, while events are immutable facts consumers must interpret."),
