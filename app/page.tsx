@@ -150,7 +150,15 @@ const rabbitMqLessons: Lesson[] = [
   { number: "09", title: "Production architecture", duration: "138 min", topics: ["High availability design", "Federation & Shovel", "Schema evolution", "Testing message-driven systems", "Performance tuning", "Production readiness review"] },
 ];
 
-const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons, ...graphqlLessons, ...kubernetesLessons, ...eventDrivenLessons, ...rabbitMqLessons];
+const tddLessons: Lesson[] = [
+  { number: "01", title: "TDD foundations", duration: "22 min", topics: ["What is Test-Driven Development?", "Test-first development"] },
+  { number: "02", title: "Red–Green–Refactor", duration: "34 min", topics: ["Red: write a failing test", "Green: make the test pass", "Refactor: improve the design", "The rapid feedback loop"] },
+  { number: "03", title: "Core principles", duration: "28 min", topics: ["Minimal implementation", "Granular behavior", "Continuous feedback"] },
+  { number: "04", title: "Practical TDD", duration: "58 min", topics: ["Discount calculator scenario", "Red–Green–Refactor with C# and xUnit", "Red–Green–Refactor with JavaScript and Jest", "Choosing valuable tests", "Keeping tests resilient"] },
+  { number: "05", title: "Benefits & boundaries", duration: "26 min", topics: ["TDD advantages", "TDD challenges", "TDD and the wider test strategy"] },
+];
+
+const allCourseLessons = [...lessons, ...authLessons, ...dotnetLessons, ...apiLessons, ...figmaLessons, ...systemDesignLessons, ...companyBestPracticesLessons, ...graphqlLessons, ...kubernetesLessons, ...eventDrivenLessons, ...rabbitMqLessons, ...tddLessons];
 
 const lessonMeaning: Record<string, string> = {
   "01": "Abstraction · Polymorphism · Inheritance · Encapsulation",
@@ -256,6 +264,14 @@ const rabbitMqLessonMeaning: Record<string, string> = {
   "09": "Combining reliability, compatibility, testing, performance, and recovery into an operable system",
 };
 
+const tddLessonMeaning: Record<string, string> = {
+  "01": "Writing a test before production code so expected behavior guides implementation and design",
+  "02": "A short cycle that proves the test can fail, makes it pass minimally, and improves the design safely",
+  "03": "Small behavioral steps, minimal code, and frequent execution for fast, trustworthy feedback",
+  "04": "Growing a feature one observable behavior at a time while keeping tests readable and durable",
+  "05": "Clearer requirements and safer change, balanced against test maintenance and the need for broader testing",
+};
+
 const expandedName: Record<string, string> = {
   DRY: "Don’t Repeat Yourself",
   KISS: "Keep It Simple, Stupid",
@@ -318,9 +334,10 @@ export default function Home() {
     const inCourseEight = graphqlLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseNine = kubernetesLessons.some((lesson) => lesson.topics.includes(topic));
     const inCourseTen = eventDrivenLessons.some((lesson) => lesson.topics.includes(topic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : inCourseTen ? "10" : "11";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : inCourseTen ? eventDrivenLessons : rabbitMqLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : inCourseTen ? 900 : 1000;
+    const inCourseEleven = rabbitMqLessons.some((lesson) => lesson.topics.includes(topic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : inCourseTen ? "10" : inCourseEleven ? "11" : "12";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : inCourseTen ? eventDrivenLessons : inCourseEleven ? rabbitMqLessons : tddLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : inCourseTen ? 900 : inCourseEleven ? 1000 : 1100;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(topic));
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     if (lessonIndex >= 0) setOpenLessons((current) => current.includes(lessonIndex + offset) ? current : [...current, lessonIndex + offset]);
@@ -350,9 +367,10 @@ export default function Home() {
     const inCourseEight = graphqlLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseNine = kubernetesLessons.some((lesson) => lesson.topics.includes(savedTopic));
     const inCourseTen = eventDrivenLessons.some((lesson) => lesson.topics.includes(savedTopic));
-    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : inCourseTen ? "10" : "11";
-    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : inCourseTen ? eventDrivenLessons : rabbitMqLessons;
-    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : inCourseTen ? 900 : 1000;
+    const inCourseEleven = rabbitMqLessons.some((lesson) => lesson.topics.includes(savedTopic));
+    const course = inCourseOne ? "01" : inCourseTwo ? "02" : inCourseThree ? "03" : inCourseFour ? "04" : inCourseFive ? "05" : inCourseSix ? "06" : inCourseSeven ? "07" : inCourseEight ? "08" : inCourseNine ? "09" : inCourseTen ? "10" : inCourseEleven ? "11" : "12";
+    const courseLessons = inCourseOne ? lessons : inCourseTwo ? authLessons : inCourseThree ? dotnetLessons : inCourseFour ? apiLessons : inCourseFive ? figmaLessons : inCourseSix ? systemDesignLessons : inCourseSeven ? companyBestPracticesLessons : inCourseEight ? graphqlLessons : inCourseNine ? kubernetesLessons : inCourseTen ? eventDrivenLessons : inCourseEleven ? rabbitMqLessons : tddLessons;
+    const offset = inCourseOne ? 0 : inCourseTwo ? 100 : inCourseThree ? 200 : inCourseFour ? 300 : inCourseFive ? 400 : inCourseSix ? 500 : inCourseSeven ? 600 : inCourseEight ? 700 : inCourseNine ? 800 : inCourseTen ? 900 : inCourseEleven ? 1000 : 1100;
     const lessonIndex = courseLessons.findIndex((lesson) => lesson.topics.includes(savedTopic)) + offset;
     setOpenCourses((current) => current.includes(course) ? current : [...current, course]);
     setOpenLessons((current) => current.includes(lessonIndex) ? current : [...current, lessonIndex]);
@@ -377,9 +395,10 @@ export default function Home() {
   const kubernetesTopics = kubernetesLessons.flatMap((lesson) => lesson.topics);
   const eventDrivenTopics = eventDrivenLessons.flatMap((lesson) => lesson.topics);
   const rabbitMqTopics = rabbitMqLessons.flatMap((lesson) => lesson.topics);
-  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics, ...graphqlTopics, ...kubernetesTopics, ...eventDrivenTopics, ...rabbitMqTopics];
-  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : companyBestPracticesTopics.includes(activeTopic) ? "07" : graphqlTopics.includes(activeTopic) ? "08" : kubernetesTopics.includes(activeTopic) ? "09" : eventDrivenTopics.includes(activeTopic) ? "10" : "11";
-  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : activeCourse === "07" ? companyBestPracticesTopics : activeCourse === "08" ? graphqlTopics : activeCourse === "09" ? kubernetesTopics : activeCourse === "10" ? eventDrivenTopics : rabbitMqTopics;
+  const tddTopics = tddLessons.flatMap((lesson) => lesson.topics);
+  const allTopics = [...oopTopics, ...authTopics, ...dotnetTopics, ...apiTopics, ...figmaTopics, ...systemDesignTopics, ...companyBestPracticesTopics, ...graphqlTopics, ...kubernetesTopics, ...eventDrivenTopics, ...rabbitMqTopics, ...tddTopics];
+  const activeCourse = oopTopics.includes(activeTopic) ? "01" : authTopics.includes(activeTopic) ? "02" : dotnetTopics.includes(activeTopic) ? "03" : apiTopics.includes(activeTopic) ? "04" : figmaTopics.includes(activeTopic) ? "05" : systemDesignTopics.includes(activeTopic) ? "06" : companyBestPracticesTopics.includes(activeTopic) ? "07" : graphqlTopics.includes(activeTopic) ? "08" : kubernetesTopics.includes(activeTopic) ? "09" : eventDrivenTopics.includes(activeTopic) ? "10" : rabbitMqTopics.includes(activeTopic) ? "11" : "12";
+  const activeCourseTopics = activeCourse === "01" ? oopTopics : activeCourse === "02" ? authTopics : activeCourse === "03" ? dotnetTopics : activeCourse === "04" ? apiTopics : activeCourse === "05" ? figmaTopics : activeCourse === "06" ? systemDesignTopics : activeCourse === "07" ? companyBestPracticesTopics : activeCourse === "08" ? graphqlTopics : activeCourse === "09" ? kubernetesTopics : activeCourse === "10" ? eventDrivenTopics : activeCourse === "11" ? rabbitMqTopics : tddTopics;
   const courseTopicIndex = activeCourseTopics.indexOf(activeTopic);
   const activeIndex = allTopics.indexOf(activeTopic);
   const nextTopic = allTopics[(activeIndex + 1) % allTopics.length];
@@ -407,6 +426,7 @@ export default function Home() {
     ["Kubernetes in depth", kubernetesLessons],
     ["Event-Driven Development", eventDrivenLessons],
     ["RabbitMQ", rabbitMqLessons],
+    ["Test-Driven Development", tddLessons],
   ].filter(([title, courseLessons]) => courseMatches(title as string, courseLessons as Lesson[])).length;
 
   const renderLessons = (courseLessons: Lesson[], offset: number, label: string) => (
@@ -717,6 +737,30 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <section className={styles.courseGroup} hidden={!courseMatches("Test-Driven Development", tddLessons)}>
+          <button className={styles.courseHeader} onClick={() => toggleCourse("12")} aria-expanded={openCourses.includes("12")}>
+            <span><small>Course 12</small><strong>Test-Driven Development</strong></span>
+            <span className={`${styles.courseChevron} ${openCourses.includes("12") ? styles.courseChevronOpen : ""}`}>⌄</span>
+          </button>
+          <div className={`${styles.courseBody} ${openCourses.includes("12") ? styles.courseBodyOpen : ""}`}>
+            <div className={styles.courseBodyInner}>
+              <div className={styles.courseMeta}>
+                <h2>Test-driven development,<br />from failing test to confident design.</h2>
+                <div className={styles.progressRow}>
+                  <span>{activeCourse === "12" ? Math.round(((courseTopicIndex + 1) / tddTopics.length) * 100) : 0}% complete</span>
+                  <span>{activeCourse === "12" ? courseTopicIndex + 1 : 0} / {tddTopics.length}</span>
+                </div>
+                <div className={styles.progressTrack}><span style={{ width: `${activeCourse === "12" ? ((courseTopicIndex + 1) / tddTopics.length) * 100 : 0}%` }} /></div>
+                {savedTopic && tddTopics.includes(savedTopic) && (
+                  <button className={styles.resumeButton} onClick={resumeSavedTopic}>
+                    <span>Resume</span><strong>{savedTopic}</strong><b>→</b>
+                  </button>
+                )}
+              </div>
+              {renderLessons(tddLessons, 1100, "Course 12 lessons")}
+            </div>
+          </div>
+        </section>
       </div>
     </>
   );
@@ -750,7 +794,7 @@ export default function Home() {
               <span>What it means</span>
               <p>{copy.intro}</p>
             </div>
-            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : activeCourse === "07" ? companyBestPracticesLessonMeaning[activeLesson.number] : activeCourse === "08" ? graphqlLessonMeaning[activeLesson.number] : activeCourse === "09" ? kubernetesLessonMeaning[activeLesson.number] : activeCourse === "10" ? eventDrivenLessonMeaning[activeLesson.number] : rabbitMqLessonMeaning[activeLesson.number]}</p>
+            <p className={styles.familyMeaning}><strong>{activeLesson.title.split(" · ")[0]}</strong> {activeCourse === "01" ? lessonMeaning[activeLesson.number] : activeCourse === "02" ? authLessonMeaning[activeLesson.number] : activeCourse === "03" ? dotnetLessonMeaning[activeLesson.number] : activeCourse === "04" ? apiLessonMeaning[activeLesson.number] : activeCourse === "05" ? figmaLessonMeaning[activeLesson.number] : activeCourse === "06" ? systemDesignLessonMeaning[activeLesson.number] : activeCourse === "07" ? companyBestPracticesLessonMeaning[activeLesson.number] : activeCourse === "08" ? graphqlLessonMeaning[activeLesson.number] : activeCourse === "09" ? kubernetesLessonMeaning[activeLesson.number] : activeCourse === "10" ? eventDrivenLessonMeaning[activeLesson.number] : activeCourse === "11" ? rabbitMqLessonMeaning[activeLesson.number] : tddLessonMeaning[activeLesson.number]}</p>
           </div>
 
           <div className={styles.readingGrid}>
